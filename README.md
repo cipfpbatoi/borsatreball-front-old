@@ -1,29 +1,6 @@
-# borsatreball-front
+# Borsa de Treball del CIP FP Batoi
+Ací es troba l'aplicació del projecte de la Borsa de Treball del CIP FP Batoi. 
 
-## Project setup
-```
-npm install
-```
+Podeu consultar la [documentació](./docs/) per a saber cóm utilitzar la nostra Borsa.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Si el que vols es provar l'aplicación consulta la [documentació d'instal·lació](./docs/setup/) de la mateixa.
