@@ -3,11 +3,13 @@ export default {
     user: {
         name: 'Usuari no identificat',
     },
+    errors: [],
+    ciclos: [],
     menu: [
         {
             "id": 9,
             "order": 97,
-            "icon": "power_settings_new",
+            "icon": "mdi-login",
             "text": "Loguejar-te",
             "path": "/login",
             "rol": 9999,
@@ -20,7 +22,7 @@ export default {
         {
             "id": 29,
             "order": 98,
-            "icon": "exit_to_app",
+            "icon": "mdi-account-plus-outline",
             "text": "Registrar-te",
             "path": "/register",
             "rol": 9999,

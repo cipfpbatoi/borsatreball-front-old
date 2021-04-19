@@ -11,10 +11,10 @@
       s'han preparat en el nostre Centre y que pensem que s'adaptaran
       perfectament als seus requeriments.
     </p>
-    <p>Una vegada publicada una oferta es pot veure el curriculum de les
-      persones que cumpleixen els requisits demanats. Els aspirants 
-      també ens poden indicar el seu interés per la nostra oferta de manera
-      que siga senzill posar-se en contacte amb els que millor s'adapten a
+    <p>Una vegada publicada una oferta els aspirants rebren un email
+      informant-los i es poden 'apuntar' a la mateixa de forma que
+      com empresa podem veure les seues dades i el seu C.V. de manera
+      que siga senzill posar-nos en contacte amb els que millor s'adapten a
       les nostres necessitats.
     </p>
     <h2>Sóc un ex-alumne que busque treball</h2>
@@ -41,8 +41,8 @@
     </p>
       <p>També pots trobar un manual on s'explique tot el necessari segons el teu cas:
         <ul>
-          <li><a target="_ajudaBorsa" href="https://cipfpbatoi.github.io/borsaBatoi/tutorials/empresa.html">Manual per a l'empresa</a></li>
-          <li><a target="_ajudaBorsa" href="https://cipfpbatoi.github.io/borsaBatoi/tutorials/alumne.html">Manual per a l'alumne</a></li>
+          <li><a target="_ajudaBorsa" :href="tutorialPage + 'empresa.html'">Manual per a l'empresa</a></li>
+          <li><a target="_ajudaBorsa" :href="tutorialPage + 'alumne.html'">Manual per a l'alumne</a></li>
         </ul>
       </p>
     <help-button v-if="helpPage" :page="helpPage"></help-button>
@@ -59,5 +59,16 @@ export default {
   data: () => ({
     helpPage: "/",
   }),
+  computed: {
+    tutorialPage() {
+      return process.env.VUE_APP_HELP_PAGES + 'tutorials/'
+    }
+  }
 };
 </script>
+
+<style scoped>
+  .home {
+    margin: 10px;
+  }
+</style>

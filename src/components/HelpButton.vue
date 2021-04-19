@@ -1,6 +1,6 @@
 <template>
   <v-btn text icon color="blue-grey" title="Ajuda" @click="showHelp(page)">
-    <v-icon large>help_outline</v-icon>
+    <v-icon large>mdi-help-circle-outline</v-icon>
   </v-btn>
 </template>
 
@@ -14,4 +14,3 @@ export default {
   },
 };
 </script>
-

@@ -1,4 +1,6 @@
 # Borsa de Treball del CIP FP Batoi
+** EN DESENVOLUPAMENT **
+
 Aquesta és l'ajuda de la borsa de treball del CIP FP Batoi. Es tracte d'un punt de trobada entre les empreses que busquen professionals per a incorporar a la seua plantilla i els alumnes i antics alumnes que s'han format en el Centre.
 
 Ací pots trobar ajuda per a cada pantalla de l'aplicació així com manuals per als diferents usuaris:
