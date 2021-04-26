@@ -1,7 +1,8 @@
 export default {
     title: "Borsa de treball",
+    center: process.env.VUE_APP_CENTER,
     user: {
-        name: 'Usuari no identificat',
+        name: '',
     },
     errors: [],
     ciclos: [],

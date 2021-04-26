@@ -10,7 +10,7 @@
     <v-app-bar color="blue-grey" dark app>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-toolbar-title>CIP FP Batoi - Borsa de Treball</v-toolbar-title>
+      <v-toolbar-title>{{ centerName }} - Borsa de Treball</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-title class="ml-0 pl-3">
         <h2>{{ title }}</h2>
@@ -53,14 +53,18 @@ export default {
     drawer: null,
   }),
   computed: {
+    centerName() {
+      return this.$store.state.center
+    },
     title() {
-      return this.$store.state.title;
+      return this.$store.state.title
     },
     menu() {
-      return this.$store.state.title;
+      return this.$store.state.menu
     },
     userName() {
-      return "Hola " + this.$store.getters.getUserName;
+      const user = this.$store.getters.getUserName
+      return user?"Hola " + user:'';
     },
     menuItems() {
       return this.$store.state.menu;

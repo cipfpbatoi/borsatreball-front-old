@@ -3,7 +3,7 @@
     <v-card-title class="grey lighten-4 py-4 title">
       {{ isNew ? "Nou" : "Editar" }} usuari
     </v-card-title>
-    <validation-observer ref="observer" v-slot="{ invalid }">
+    <validation-observer ref="observer">
       <v-form @submit.prevent="submit" lazy-validation>
         <v-container>
           <v-row>
@@ -12,6 +12,7 @@
                 name="e-Mail"
                 v-slot="{ errors }"
                 rules="required|email"
+                vid="email"
               >
                 <v-text-field
                   v-model="user.email"
@@ -61,24 +62,25 @@
           </v-row>
           <v-row>
             <v-col cols="12">
-              <validation-provider
-                name="Rol"
-                v-slot="{ errors }"
-                rules="required"
-              >
-                <v-radio-group v-model="user.rol" row>
-                  <v-label>Indica per a què vols utilitzar la bolsa</v-label>
+              <v-radio-group v-model="user.rol" row>
+                <v-label>Indica per a què vols utilitzar la bolsa</v-label>
+                <validation-provider
+                  name="Rol"
+                  v-slot="{ errors }"
+                  rules="required"
+                  vid="rol"
+                >
                   <v-radio
                     label="Buscar treball"
                     :error-messages="errors"
                     :value="ROL_TRABAJADOR"
                   ></v-radio>
-                  <v-radio
-                    label="Oferir treball"
-                    :value="ROL_EMPLEADOR"
-                  ></v-radio>
-                </v-radio-group>
-              </validation-provider>
+                </validation-provider>
+                <v-radio
+                  label="Oferir treball"
+                  :value="ROL_EMPLEADOR"
+                ></v-radio>
+              </v-radio-group>
             </v-col>
           </v-row>
           <v-card v-if="user.rol === ROL_EMPLEADOR">
@@ -151,7 +153,7 @@
                   <validation-provider
                     name="Telefon"
                     v-slot="{ errors }"
-                    rules="required|max:25"
+                    rules="max:25"
                   >
                     <v-text-field
                       label="Telèfon"
@@ -182,7 +184,7 @@
                 <validation-provider
                   name="Web"
                   v-slot="{ errors }"
-                  rules="required|max:50"
+                  rules="max:50"
                 >
                   <v-text-field
                     label="Pàgina web"
@@ -198,7 +200,7 @@
                 <validation-provider
                   name="Descripcio"
                   v-slot="{ errors }"
-                  rules="required|max:200"
+                  rules="max:200"
                 >
                   <v-textarea
                     label="Descripció"
@@ -221,7 +223,7 @@
                 >
                   <v-text-field
                     label="Nom"
-                    placeholder="CIF"
+                    placeholder="Nom"
                     v-model="user.nombre"
                     :error-messages="errors"
                     counter="25"
@@ -248,7 +250,7 @@
                 <validation-provider
                   name="Domicili"
                   v-slot="{ errors }"
-                  rules="required|max:80"
+                  rules="max:80"
                 >
                   <v-textarea
                     label="Domicil·li"
@@ -266,6 +268,7 @@
                     name="Borsa"
                     v-slot="{ errors }"
                     rules="required"
+                    vid="bolsa"
                   >
                     <v-checkbox
                       label="Borsa treball"
@@ -277,11 +280,7 @@
                   </validation-provider>
                 </v-row>
                 <v-row>
-                  <validation-provider
-                    name="Info"
-                    v-slot="{ errors }"
-                    rules="required"
-                  >
+                  <validation-provider name="Info" v-slot="{ errors }">
                     <v-checkbox
                       label="Rebre info"
                       v-model="user.info"
@@ -298,7 +297,7 @@
                 <validation-provider
                   name="Curriculum"
                   v-slot="{ errors }"
-                  rules="required|max:80"
+                  rules="max:80"
                 >
                   <v-text-field
                     type="web"
@@ -314,7 +313,7 @@
                 <validation-provider
                   name="Telefon"
                   v-slot="{ errors }"
-                  rules="required|max:25"
+                  rules="max:25"
                 >
                   <v-text-field
                     label="Telèfon"
@@ -353,6 +352,7 @@
                 name="Condicions"
                 v-slot="{ errors }"
                 rules="required"
+                vid="accept"
               >
                 <v-checkbox
                   xs12
@@ -374,7 +374,7 @@
         <v-card-actions>
           <help-button v-if="helpPage" :page="helpPage"></help-button>
           <v-spacer></v-spacer>
-          <v-btn type="submit" :disabled="invalid">Login</v-btn>
+          <v-btn type="submit">Login</v-btn>
         </v-card-actions>
       </v-form>
     </validation-observer>
@@ -382,10 +382,11 @@
 </template>
 
 <script>
+import API from "@/service/API";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 import { extend, localize } from "vee-validate";
 import es from "vee-validate/dist/locale/es.json";
-import { required, email, min, regex } from "vee-validate/dist/rules";
+import { required, email, min, max, regex } from "vee-validate/dist/rules";
 import HelpButton from "../components/HelpButton";
 import CONSTANTS from "@/app.constants";
 
@@ -393,16 +394,18 @@ localize("es", es);
 extend("required", required);
 extend("email", email);
 extend("min", min);
+extend("max", max);
 extend("regex", regex);
 extend("password", {
   params: ["target"],
   validate(value, { target }) {
     return value === target;
   },
-  message: "Les contrasenyes {_value_} no {_target_} concorden",
+  message: "Les contrasenyes no concorden",
 });
 
 export default {
+  name: "register",
   components: {
     HelpButton,
     ValidationObserver,
@@ -413,10 +416,11 @@ export default {
     isNew: true,
     user: {},
     show: false,
+    customErrors: {},
   }),
   computed: {
     ciclos() {
-      return this.$store.state.ciclos
+      return this.$store.state.ciclos;
     },
     ROL_EMPLEADOR() {
       return CONSTANTS.ROL_EMPLEADOR;
@@ -426,14 +430,74 @@ export default {
     },
   },
   methods: {
-    checkUserMail() {},
-    submit() {
-      if (!this.user.accept) {
-        alert(
-          "Ha d'aceptar les condicions i la política de privacitat de la Borsa"
-        );
-        return;
+    checkUserMail() {
+      API.users
+        .checkEmailAvailable(this.user.email)
+        .then((response) => {
+          if (!response.data.data) {
+            this.customErrors.email = "Aquest email ja està registrat";
+            this.$refs.observer.setErrors(this.customErrors);
+          } else {
+            this.customErrors.email = ''
+            //this.$refs.observer.setErrors({ email: ''});
+          }
+        })
+        .catch((error) => this.$store.commit('setError', error));
+    },
+    async submit() {
+      // Validamos a mano algunas cosas
+      if (this.customErrors.email) {
+        this.customErrors = {
+          email: this.customErrors.email
+        }
+      } else {
+        this.customErrors = {};
       }
+
+      if (!this.user.rol) {
+        this.customErrors.rol = "Ha de triar un rol";
+        alert("Has de triar un rol: Buscar o Oferir treball");
+      }
+      if (!this.user.bolsa) {
+        this.customErrors.bolsa =
+          "Si no marques aquesta casella no pots forma part de la Borsa";
+      }
+      if (!this.user.accept) {
+        this.customErrors.accept =
+          "Ha d'aceptar les condicions i la política de privacitat de la Borsa";
+      }
+
+      const hasCustomErrors = Object.keys(this.customErrors).length;
+      const valid = await this.$refs.observer.validate();
+
+      if (hasCustomErrors) {
+        this.$refs.observer.setErrors(this.customErrors)
+      } else if (valid) {
+        this.registerUser()
+      }
+    },
+
+    registerUser() {
+      API.users.register(this.user)
+      .then((response) => {
+        if (response.status == 201) {
+          this.$store.commit('loginUser', response.data.data)
+          this.$store.dispatch('getMenu')
+          this.$router.push(this.user.rol == this.ROL_TRABAJADOR
+            ?'ofertas-alum':'ofertas')
+        } else {
+          this.customErrors = response.errors
+          this.$refs.observer.setErrors(this.customErrors)
+          this.$store.commit('setError', response.message)
+        }
+      })
+      .catch((response) => {
+        this.$store.commit('setError', response.message || response)
+        if (response.response.data.errors) {
+          this.customErrors = response.response.data.errors
+          this.$refs.observer.setErrors(this.customErrors)
+        }
+      })
     },
   },
 };

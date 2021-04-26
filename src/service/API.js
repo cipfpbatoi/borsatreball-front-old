@@ -6,6 +6,8 @@ const DEBUG = true
 
 const users = {
     login: (item) => axios.post(`${API_URL}/auth/login`, item),
+    register: (user) => axios.post(`${API_URL}/auth/signup`, user),
+    checkEmailAvailable: (email) => axios.get(`${API_URL}/users/${email}/available`),
     getMenu: () => axios.get(`${API_URL}/menu`),
 };
 
