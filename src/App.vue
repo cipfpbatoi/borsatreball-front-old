@@ -47,7 +47,7 @@ export default {
     MenuItem,
   },
   created() {
-    this.$store.dispatch('getCiclos')
+    this.$store.dispatch('getTable', 'ciclos')
   },
   data: () => ({
     drawer: null,

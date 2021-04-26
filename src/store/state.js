@@ -6,6 +6,7 @@ export default {
     },
     errors: [],
     ciclos: [],
+    ofertas: [],
     menu: [
         {
             "id": 9,

@@ -482,7 +482,7 @@ export default {
       .then((response) => {
         if (response.status == 201) {
           this.$store.commit('loginUser', response.data.data)
-          this.$store.dispatch('getMenu')
+          this.$store.dispatch('getTable', 'menu')
           this.$router.push(this.user.rol == this.ROL_TRABAJADOR
             ?'ofertas-alum':'ofertas')
         } else {

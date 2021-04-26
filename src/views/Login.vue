@@ -47,6 +47,7 @@ import { extend, localize } from 'vee-validate';
 import es from 'vee-validate/dist/locale/es.json';
 import { required, email, min } from 'vee-validate/dist/rules';
 import HelpButton from "../components/HelpButton";
+import CONSTANTS from "@/app.constants";
 
 localize('es', es);
 extend('required', required);
@@ -65,12 +66,19 @@ export default {
       show: false,
     };
   },
+  computed: {
+    ROL_TRABAJADOR() {
+      return CONSTANTS.ROL_TRABAJADOR;
+    },
+  },
   methods: {
     submit() {
       this.$store
         .dispatch("login", this.user)
-        .then(() => this.$router.push("/ofertas"))
+        .then(() => this.$router.push(
+          this.user.rol == this.ROL_TRABAJADOR
+          ?'ofertas-alum':'ofertas'))
     },
   },
-};
+}
 </script>

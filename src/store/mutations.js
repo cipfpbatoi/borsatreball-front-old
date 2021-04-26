@@ -7,11 +7,8 @@ export default {
         state.user = {}
         localStorage.removeItem('token')
     },
-    setMenu(state, menu) {
-        state.menu = menu
-    },
-    setCiclos(state, ciclos) {
-        state.ciclos = ciclos
+    setTable(state, { table, data }) {
+        state[table] = data
     },
     setError(state, error, type) {
         let msg = ''

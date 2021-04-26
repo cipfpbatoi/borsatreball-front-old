@@ -8,11 +8,18 @@ const users = {
     login: (item) => axios.post(`${API_URL}/auth/login`, item),
     register: (user) => axios.post(`${API_URL}/auth/signup`, user),
     checkEmailAvailable: (email) => axios.get(`${API_URL}/users/${email}/available`),
-    getMenu: () => axios.get(`${API_URL}/menu`),
+};
+
+const menu = {
+    getAll: () => axios.get(`${API_URL}/menu`),
 };
 
 const ciclos = {
     getAll: () => axios.get(`${API_URL}/ciclos`),
+};
+
+const ofertas = {
+    getAll: () => axios.get(`${API_URL}/ofertas`),
 };
 
 axios.interceptors.request.use((config) => {
@@ -49,5 +56,7 @@ axios.interceptors.response.use((response) => {
 
 export default {
     users,
+    menu,
     ciclos,
+    ofertas,
 };

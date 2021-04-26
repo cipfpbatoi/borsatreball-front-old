@@ -5,8 +5,8 @@ export default {
         return new Promise ((resolve, reject) => {
             API.users.login(user)
             .then((response) => {
-                context.commit('loginUser', response.data)
-                context.dispatch('getMenu')
+                context.commit('loginUser', response.data.data)
+                context.dispatch('getTable', 'menu')
                 resolve(true)
             })
             .catch((err) => {
@@ -15,14 +15,13 @@ export default {
             })
         })
     },
-    getMenu({ commit }) {
-        API.users.getMenu()
-        .then((response) => commit('setMenu', response.data.data))
-        .catch((err) =>  commit('setError', err))
-    },
-    getCiclos({ commit }) {
-        API.ciclos.getAll()
-        .then((response) => commit('setCiclos', response.data.data))
+    getTable({ commit }, table) {
+        API[table].getAll()
+        .then((response) => commit('setTable', {
+            table, 
+            data: response.data.data
+        }))
         .catch((err) =>  commit('setError', err))
     }
+
 }
