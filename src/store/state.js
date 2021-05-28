@@ -14,13 +14,7 @@ export default {
     'ofertas-arxiu': [],
     alumnos: [],
     empresas: [],
-    responsables: [
-        {
-            id: 1,
-            nombre: 'Juan yo'
-        }
-    ],
-    users: [],
+    responsables: [],
     menu: [
         {
             "icon": "mdi-login",

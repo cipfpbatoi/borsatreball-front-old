@@ -88,6 +88,7 @@
               label="Lloc de treball"
               placeholder="Lloc de treball"
               v-model="editedItem.puesto"
+              hint="Breu descipció del treball oferit"
               counter="50"
               required
             ></v-text-field>
@@ -106,15 +107,16 @@
               label="Tipus de contracte"
               placeholder="Tipus de contracte"
               v-model="editedItem.tipo_contrato"
+              hint="Jornada completa, tiempo parcial, contrato en prácticas, ..."
               counter="50"
               required
             ></v-text-field>
           </v-col>
           <v-col cols="12" sm="10" md="10">
-              <ciclos-select
+            <ciclos-select
               title="Cicles demanats"
               :item="editedItem"
-              ></ciclos-select>
+            ></ciclos-select>
           </v-col>
           <v-col cols="12" sm="2" md="2">
             <v-checkbox
@@ -141,12 +143,12 @@
 <script>
 import Rol from "@/service/Rol";
 
-import CiclosSelect from './CiclosSelect'
+import CiclosSelect from "./CiclosSelect";
 
 export default {
   name: "DialogOferta",
   components: {
-      CiclosSelect,
+    CiclosSelect,
   },
   props: {
     editedItem: {
@@ -196,7 +198,14 @@ export default {
         this.$emit("close");
       }
     },
-    rellenaContacto() {},
+    rellenaContacto() {
+      const empresa = this.$store.getters.getEmpresaById(
+        this.editedItem.id_empresa
+      );
+      this.editedItem.telefono = empresa.telefono;
+      this.editedItem.contacto = empresa.contacto;
+      this.editedItem.email = empresa.email;
+    },
   },
 };
 </script>

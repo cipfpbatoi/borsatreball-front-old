@@ -49,6 +49,11 @@
           icon="mdi-delete"
           tooltip="Eliminar"
         />
+                <action-icon
+          @click="voreOfertes(item.id)"
+          icon="mdi-briefcase"
+          tooltip="Vore ofertes"
+        />
       </template>
       <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length">
@@ -148,6 +153,9 @@ export default {
     },
     getDate(dateString) {
       return dateString ? dateString.split("T")[0] : "";
+    },
+    voreOfertes(id) {
+      this.$router.push('/ofertas?empresa=' + id)
     },
     editItem(item) {
       this.editedIndex = this.items.indexOf(item);

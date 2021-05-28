@@ -8,7 +8,7 @@ import Ofertas from '../views/Ofertas.vue'
 import Alumnos from '../views/Alumnos.vue'
 import Empresas from '../views/Empresas.vue'
 import Ciclos from '../views/Ciclos.vue'
-import Usuarios from '../views/Usuarios.vue'
+import Responsables from '../views/Responsables.vue'
 import MenuManager from '../views/MenuManager.vue'
 import Privacitat from '../views/Privacitat.vue'
 import NotFound from '../views/NotFound.vue'
@@ -89,9 +89,9 @@ const routes = [
     component: Ciclos,
     beforeEnter: ifAuthenticated,
   },{
-    path: '/users',
-    name: 'Usuarios',
-    component: Usuarios,
+    path: '/responsables',
+    name: 'Responsables',
+    component: Responsables,
     beforeEnter: ifAuthenticated,
   },
   {

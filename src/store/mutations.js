@@ -72,7 +72,7 @@ export default {
             if (error.response.status === 421) {
                 // Unauthenticated
                 if (state.user.access_token) {
-                    msg = "La teua sessió ha caducat a les " + state.user.expiresDate.toLocaleString() + '. Torna a loguejar-te'
+                    msg = "La teua sessió ha caducat a les " + state.user.expires_at.toLocaleString() + '. Torna a loguejar-te'
                 } else {
                     msg = `Error ${error.response.status}: ${error.response.data.message}. Has de loguejar-te`
                 }

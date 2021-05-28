@@ -24,13 +24,6 @@
         color="blue-grey"
       ></v-text-field>
         <v-spacer></v-spacer>
-    <v-dialog v-model="dialogDelete" max-width="500px">
-      <dialog-delete
-        :title="editedItem.puesto"
-        :itemType="table"
-        @close="closeDelete"
-      />
-    </v-dialog>
     <v-dialog v-model="dialog">
           <template v-slot:activator="{ on, attrs }">
             <v-btn
@@ -51,6 +44,13 @@
       />
           </v-card>
         </v-dialog>
+      <v-dialog v-model="dialogDelete" max-width="500px">
+      <dialog-delete
+        :title="editedItem.puesto"
+        :itemType="table"
+        @close="closeDelete"
+      />
+    </v-dialog>
       </v-toolbar>
       </template>
 
@@ -153,7 +153,9 @@ export default {
     items() {
       return this.isArxiu
         ? this.$store.state['ofertas-arxiu']
-        : this.$store.state.ofertas
+        : this.$route.query.empresa
+          ? this.$store.getters.getOfertasByEmpresa(this.$route.query.empresa) 
+          : this.$store.state.ofertas
     },
     isArxiu() {
       return this.$route.path === "/ofertas-arxiu";
@@ -189,7 +191,6 @@ export default {
       );
       this.dialog = true;
     },
-
     deleteItem(item) {
       this.editedIndex = this.items.indexOf(item);
       this.editedItem = Object.assign({}, item);
