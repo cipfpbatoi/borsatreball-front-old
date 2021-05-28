@@ -26,8 +26,8 @@
     <h2>Com comence?</h2>
     <p>El primer pas per a participar en la Borsa, tant si eres empresa 
       com alumne, és <a @click.prevent="$router.push('/register')">
-      registrar-te</a> i crear el teu compte. Si ja el tens només 
-      t'has de <a @click.prevent="$router.push('/login')">loguejar</a>.
+      crear-te el teu compte</a>. Si ja el tens només 
+      has de <a @click.prevent="$router.push('/login')">iniciar sessió</a>.
     </p>
     <h2>Privacitat</h2>
     <p>Si participes en aquesta borsa dones la teua conformitat per al tractament de les
@@ -35,30 +35,23 @@
       <a @click.prevent="$router.push('/privacitat')">política de privacitat</a>.
     </p>
     <h2>Obtindre ajuda</h2>
-    <p>En la majoria de pantalles ens apareixerá a la part inferior esquerra
+    <p>A la part inferior dreta de la finestra tens
        una icona amb un interrogant que ens obrirà una nova
-       finestra en el navegador amb l'ajuda per a eixa pantalla.
+       finestra en el navegador amb l'ajuda del que estem fent.
     </p>
       <p>També pots trobar un manual on s'explique tot el necessari segons el teu cas:
         <ul>
           <li><a target="_ajudaBorsa" :href="tutorialPage + 'empresa.html'">Manual per a l'empresa</a></li>
           <li><a target="_ajudaBorsa" :href="tutorialPage + 'alumne.html'">Manual per a l'alumne</a></li>
+          <li><a target="_ajudaBorsa" :href="tutorialPage + 'responsable.html'">Manual per al responsable de Cicle</a></li>
         </ul>
       </p>
-    <help-button v-if="helpPage" :page="helpPage"></help-button>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelpButton from "@/components/HelpButton";
-
 export default {
   name: "Home",
-  components: { HelpButton },
-  data: () => ({
-    helpPage: "/",
-  }),
   computed: {
     tutorialPage() {
       return process.env.VUE_APP_HELP_PAGES + 'tutorials/'

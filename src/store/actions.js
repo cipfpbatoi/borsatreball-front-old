@@ -16,12 +16,44 @@ export default {
         })
     },
     getTable({ commit }, table) {
-        API[table].getAll()
+        API.table.getAll(table)
         .then((response) => commit('setTable', {
             table, 
             data: response.data.data
         }))
         .catch((err) =>  commit('setError', err))
+    },
+    saveItemToTable({ commit }, { table, item }) {
+        if (item.id) {
+            API.table.modifyItem(table, item)
+            .then((response) => {
+                commit('modifyItem', {
+                table, 
+                data: response.data.data
+            })})
+            .catch((err) =>  commit('setError', err))    
+        } else {
+            API.table.addItem(table, item)
+            .then((response) => commit('addItem', {
+                table, 
+                data: response.data.data
+            }))
+            .catch((err) =>  commit('setError', err))    
+        }
+    },
+    delItemFromTable({ commit }, { table, id }) {
+        API.table.delItem(table, id)
+        .then((response) => commit('delItem', {
+            table, 
+            id: response.data.data.id,
+        }))
+        .catch((err) =>  commit('setError', err))
+    },
+    changeValidity({ commit }, payload) {
+        API.alumns.changeValidity(payload)
+        .then((response) => commit('changeAlumn', response.data.data))
+        .catch((err) =>  commit('setError', err))
+
     }
 
 }

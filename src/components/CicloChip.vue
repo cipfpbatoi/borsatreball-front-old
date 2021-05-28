@@ -1,33 +1,30 @@
 <template>
-  <v-chip
-    @dblclick="$emit('dblclick')"
-    :title="descCiclo"
-  >
-    <v-avatar
-      :color="colorCircle"
-      :title="titleCircle"
-    >
-      <strong class="white--text">{{ ciclo.any }}</strong>
-    </v-avatar>
-    {{ nomCiclo }}
+  <v-chip link outlined :color="color" @dblclick="$emit('dblclick')" :title="ciclo.vCiclo">
+      <yes-no-icon 
+        v-if="data.validado !== undefined"
+        :value="data.validado" />
+    {{ info }}
   </v-chip>
 </template>
 
 <script>
+import YesNoIcon from './YesNoIcon.vue';
 export default {
-    name: 'ciclo-chip',
-    props: ['ciclo', 'nomCiclo', 'descCiclo'],
-    computed: {
-        colorCircle() {
-            if (this.ciclo.validado==undefined)
-                return 'grey';
-            return this.ciclo.validado?'teal':'red';
-        },
-        titleCircle() {
-            if (this.ciclo.validado==undefined)
-                return this.descCiclo;
-            return this.ciclo.validado?'Validado':'No validado';
-        }
+  components: { YesNoIcon },
+  name: "ciclo-chip",
+  props: ["data"],
+  computed: {
+    ciclo() {
+      return this.$store.getters.getCicloById(this.data.id_ciclo);
+    },
+    info() {
+      return this.ciclo.ciclo + 
+      (this.data.any?' (' + this.data.any + ')':'') 
+    },
+    color() {
+      if (this.data.validado === undefined) return 'blue-grey'
+      return this.data.validado?'teal':'red'
     }
-}
+  },
+};
 </script>

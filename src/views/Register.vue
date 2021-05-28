@@ -411,6 +411,12 @@ export default {
     ValidationObserver,
     ValidationProvider,
   },
+  created() {
+    this.$store.commit("setTitle", {
+      title: "Crear compte",
+      helpPage: "registro",
+    });
+  },
   data: () => ({
     helpPage: "login",
     isNew: true,
@@ -438,18 +444,18 @@ export default {
             this.customErrors.email = "Aquest email ja està registrat";
             this.$refs.observer.setErrors(this.customErrors);
           } else {
-            this.customErrors.email = ''
+            this.customErrors.email = "";
             //this.$refs.observer.setErrors({ email: ''});
           }
         })
-        .catch((error) => this.$store.commit('setError', error));
+        .catch((error) => this.$store.commit("setError", error));
     },
     async submit() {
       // Validamos a mano algunas cosas
       if (this.customErrors.email) {
         this.customErrors = {
-          email: this.customErrors.email
-        }
+          email: this.customErrors.email,
+        };
       } else {
         this.customErrors = {};
       }
@@ -471,33 +477,35 @@ export default {
       const valid = await this.$refs.observer.validate();
 
       if (hasCustomErrors) {
-        this.$refs.observer.setErrors(this.customErrors)
+        this.$refs.observer.setErrors(this.customErrors);
       } else if (valid) {
-        this.registerUser()
+        this.registerUser();
       }
     },
 
     registerUser() {
-      API.users.register(this.user)
-      .then((response) => {
-        if (response.status == 201) {
-          this.$store.commit('loginUser', response.data.data)
-          this.$store.dispatch('getTable', 'menu')
-          this.$router.push(this.user.rol == this.ROL_TRABAJADOR
-            ?'ofertas-alum':'ofertas')
-        } else {
-          this.customErrors = response.errors
-          this.$refs.observer.setErrors(this.customErrors)
-          this.$store.commit('setError', response.message)
-        }
-      })
-      .catch((response) => {
-        this.$store.commit('setError', response.message || response)
-        if (response.response.data.errors) {
-          this.customErrors = response.response.data.errors
-          this.$refs.observer.setErrors(this.customErrors)
-        }
-      })
+      API.users
+        .register(this.user)
+        .then((response) => {
+          if (response.status == 201) {
+            this.$store.commit("loginUser", response.data.data);
+            this.$store.dispatch("getTable", "menu");
+            this.$router.push(
+              this.user.rol == this.ROL_TRABAJADOR ? "ofertas-alum" : "ofertas"
+            );
+          } else {
+            this.customErrors = response.errors;
+            this.$refs.observer.setErrors(this.customErrors);
+            this.$store.commit("setError", response.message);
+          }
+        })
+        .catch((response) => {
+          this.$store.commit("setError", response.message || response);
+          if (response.response.data.errors) {
+            this.customErrors = response.response.data.errors;
+            this.$refs.observer.setErrors(this.customErrors);
+          }
+        });
     },
   },
 };

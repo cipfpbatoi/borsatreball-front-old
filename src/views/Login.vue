@@ -47,7 +47,7 @@ import { extend, localize } from 'vee-validate';
 import es from 'vee-validate/dist/locale/es.json';
 import { required, email, min } from 'vee-validate/dist/rules';
 import HelpButton from "../components/HelpButton";
-import CONSTANTS from "@/app.constants";
+import Rol from "@/service/Rol";
 
 localize('es', es);
 extend('required', required);
@@ -55,6 +55,13 @@ extend('email', email);
 extend('min', min);
 
 export default {
+  name: 'Login',
+    created() {
+    this.$store.commit('setTitle', {
+              title: "Iniciar sessió", 
+        helpPage: 'login'
+      })
+  },
   components: { HelpButton,
   ValidationProvider,
   ValidationObserver
@@ -66,18 +73,14 @@ export default {
       show: false,
     };
   },
-  computed: {
-    ROL_TRABAJADOR() {
-      return CONSTANTS.ROL_TRABAJADOR;
-    },
-  },
   methods: {
     submit() {
       this.$store
         .dispatch("login", this.user)
         .then(() => this.$router.push(
-          this.user.rol == this.ROL_TRABAJADOR
+          Rol.imAlumno(this.user.rol)
           ?'ofertas-alum':'ofertas'))
+        .catch((err) => this.$store.commit('setError', err))
     },
   },
 }

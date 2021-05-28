@@ -1,5 +1,5 @@
 <template>
-  <v-btn text icon color="blue-grey" title="Ajuda" @click="showHelp(page)">
+  <v-btn text icon color="white" title="Ajuda" @click="showHelp(page)">
     <v-icon large>mdi-help-circle-outline</v-icon>
   </v-btn>
 </template>

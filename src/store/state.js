@@ -1,38 +1,36 @@
 export default {
     title: "Borsa de treball",
+    helpPage: '/',
     center: process.env.VUE_APP_CENTER,
     user: {
         name: '',
+        rol: 99,
     },
     errors: [],
     ciclos: [],
+    ciclosCategorized: [],
+    departamentos: [],
     ofertas: [],
+    'ofertas-arxiu': [],
+    alumnos: [],
+    empresas: [],
+    responsables: [
+        {
+            id: 1,
+            nombre: 'Juan yo'
+        }
+    ],
+    users: [],
     menu: [
         {
-            "id": 9,
-            "order": 97,
             "icon": "mdi-login",
-            "text": "Loguejar-te",
+            "text": "Iniciar sessió",
             "path": "/login",
-            "rol": 9999,
-            "parent": null,
-            "model": 0,
-            "active": 1,
-            "comments": null,
-            "icon_alt": null
         },
         {
-            "id": 29,
-            "order": 98,
             "icon": "mdi-account-plus-outline",
-            "text": "Registrar-te",
+            "text": "Crear nou compte",
             "path": "/register",
-            "rol": 9999,
-            "parent": null,
-            "model": 0,
-            "active": 1,
-            "comments": null,
-            "icon_alt": null
         }
-    ]
+    ],
 }
