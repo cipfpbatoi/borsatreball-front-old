@@ -12,7 +12,12 @@ import YesNoIcon from './YesNoIcon.vue';
 export default {
   components: { YesNoIcon },
   name: "ciclo-chip",
-  props: ["data"],
+  props: {
+    data: {
+      type: Object,
+      required: true,
+    }
+  },
   computed: {
     ciclo() {
       return this.$store.getters.getCicloById(this.data.id_ciclo);

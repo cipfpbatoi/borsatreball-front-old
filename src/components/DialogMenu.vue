@@ -14,38 +14,41 @@
               readonly
             ></v-text-field>
           </v-col>
-          <v-col cols="2" sm="2" md="2">
-            <v-text-field
-              v-model="editedItem.order"
-              label="Ordre"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="4" sm="4" md="4">
+          <v-col cols="5" sm="5" md="5">
             <v-text-field
               v-model="editedItem.text"
               label="Texte"
               counter="25"
             ></v-text-field>
           </v-col>
-          <v-col cols="4" sm="4" md="4">
+          <v-col cols="5" sm="5" md="5">
             <v-text-field
               v-model="editedItem.path"
               label="Ruta"
               counter="50"
             ></v-text-field>
           </v-col>
-          <v-col cols="4" sm="4" md="4">
+                    <v-col cols="2" sm="2" md="2">
+            <v-text-field
+              v-model="editedItem.order"
+              label="Ordre"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="1" sm="1" md="1">
+            <v-icon>{{ editedItem.icon }}</v-icon>
+          </v-col>
+
+          <v-col cols="6" sm="6" md="6">
             <v-text-field
               v-model="editedItem.icon"
               label="Icona"
               counter="25"
             ></v-text-field>
-            <v-icon small>{{ editedItem.icon }}</v-icon>
           </v-col>
-          <v-col cols="2" sm="2" md="2">
+          <v-col cols="3" sm="3" md="3">
             <v-checkbox v-model="editedItem.active" label="Actiu"></v-checkbox>
           </v-col>
-          <v-col cols="6" sm="6" md="6">
+          <v-col cols="12" sm="12" md="12">
             <v-select
               :items="roles"
               item-value="id"
@@ -76,8 +79,8 @@
 
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="blue darken-1" text @click="close"> Cancel·la </v-btn>
-      <v-btn color="blue darken-1" text @click="saveItemToTable">
+      <v-btn color="blue darken-1" text @click="closeDialog(false)"> Cancel·la </v-btn>
+      <v-btn color="blue darken-1" text @click="closeDialog(true)">
         Guarda
       </v-btn>
     </v-card-actions>
@@ -85,6 +88,8 @@
 </template>
 
 <script>
+import Rol from '../service/Rol'
+
 export default {
   name: "DialogMenu",
   props: {
@@ -98,8 +103,16 @@ export default {
     },
   },
   computed: {
+    roles() {
+      return Rol.getAllRoles()
+    },
     showSave() {
       return this.editedItem.id === this.$store.state.user.id;
+    },
+        formTitle() {
+        return this.editedItem.id
+          ? "Editar Oferta"
+          : "Nova Oferta";
     },
   },
   methods: {

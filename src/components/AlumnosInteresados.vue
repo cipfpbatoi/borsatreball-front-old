@@ -1,33 +1,24 @@
 <template>
   <div>
-    <v-simple-table v-if="alumnos.length">
-      <template v-slot:default>
-        <thead>
-          <tr>
-            <th>Nom</th>
-            <th>C.V.</th>
-            <th>E-mail</th>
-            <th>Telèfon</th>
-            <th>Cicles</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in alumnos" :key="item.id">
-            <td>{{ item.nombre + " " + item.apellidos }}</td>
-            <td><alumno-cv :cv_enlace="item.cv_enlace" /></td>
-            <td>item.email</td>
-            <td>item.telefono</td>
-            <td>
+  <v-data-table v-if="alumnos.length"
+    :headers="headers"
+    :items="alumnos"
+    class="elevation-1"
+  >
+      <template v-slot:item.apellidos="{ item }">
+        {{ item.apellidos + ", " + item.nombre }}
+      </template>
+      <template v-slot:item.cv_enlace="{ item }">
+        <alumno-cv :cv_enlace="item.cv_enlace" />
+      </template>
+      <template v-slot:item.ciclos="{ item }">
               <ciclo-chip
                 v-for="ciclo in item.ciclos"
                 :key="ciclo.id_ciclo"
                 :data="ciclo"
               ></ciclo-chip>
-            </td>
-          </tr>
-        </tbody>
       </template>
-    </v-simple-table>
+    </v-data-table>
     <p v-else>Encara no hi ha cap candidat interessat</p>
   </div>
 </template>
@@ -48,5 +39,14 @@ export default {
       required: true,
     },
   },
+    data: () => ({
+    headers: [
+      { text: "Nom", value: "apellidos" },
+      { text: "C.V.", value: "cv_enlace" },
+      { text: "E-mail", value: "email" },
+      { text: "Telèfon", value: "telefono" },
+      { text: "Cicles", value: "ciclos" },
+    ],
+  }),
 };
 </script>

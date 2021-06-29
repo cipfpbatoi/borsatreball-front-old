@@ -42,10 +42,10 @@ export default {
             });
             for (let dept in ciclosCategorized) {
                 if (state.ciclosCategorized.length) {
-                    state.ciclosCategorized.push({divider: true})
+                    state.ciclosCategorized.push({ divider: true })
                 }
-                state.ciclosCategorized.push({ header: dept})
-                ciclosCategorized[dept].forEach(element => 
+                state.ciclosCategorized.push({ header: dept })
+                ciclosCategorized[dept].forEach(element =>
                     state.ciclosCategorized.push(element))
             }
             state.departamentos = departamentos
@@ -66,24 +66,21 @@ export default {
         )
         if (index >= 0) state[table].splice(index, 1)
     },
-    setError(state, error, type) {
+    setError(state, error) {
         let msg = ''
         if (error.response) {
-            if (error.response.status === 421) {
-                // Unauthenticated
-                if (state.user.access_token) {
-                    msg = "La teua sessió ha caducat a les " + state.user.expires_at.toLocaleString() + '. Torna a loguejar-te'
-                } else {
-                    msg = `Error ${error.response.status}: ${error.response.data.message}. Has de loguejar-te`
-                }
-            } else {
-                msg = `Error ${error.response.status}: ${error.response.data.message}`
-                const errors = error.response.data.errors
-                if (errors) {
+            msg = `Error ${error.response.status}: ${error.response.data.message}`
+            const errors = error.response.data.errors
+            if (errors) {
+                if (typeof errors === 'object') {
                     for (let field in errors) {
                         msg += ' (Field "' + field + '": ' + errors[field][0] + ')'
                     }
-                }    
+                } else {
+                    msg += ' - ' + errors
+                }
+            } else {
+                msg = error.response.data.message || error.response.data
             }
         } else if (error.status) {
             msg = `Error ${error.status}: ${error.message}`
@@ -92,13 +89,8 @@ export default {
         }
         state.errors.push({
             show: true,
-            type: type || 'error',
+            type: error.type || 'error',
             msg
         })
     },
-    changeAlumn(state, alumn) {
-        const index = state.alumnos.findIndex((item) => 
-            item.id === alumn.id)
-        if (index >= 0) state.alumnos.splice(index, 1, alumn)
-    }
 }

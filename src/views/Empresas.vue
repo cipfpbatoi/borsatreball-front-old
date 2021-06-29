@@ -12,14 +12,12 @@
       ></v-text-field>
     </v-card-title>
     <v-dialog v-model="dialog" max-width="540px">
-      <dialog-empresa
-        :editedItem="editedItem"
-        @close="close"
-      />
+      <dialog-empresa :editedItem="editedItem" @close="close" />
     </v-dialog>
     <v-dialog v-model="dialogDelete" max-width="500px">
       <dialog-delete
         :title="editedItem.nombre"
+            :itemId="editedItem.id"
         :itemType="table"
         @close="closeDelete"
       />
@@ -40,16 +38,18 @@
 
       <template v-slot:item.actions="{ item }">
         <action-icon
+          v-if="showActions"
           @click="editItem(item)"
-          icon="mdi-pencil"
+          :icon="editIcon"
           tooltip="Editar"
         />
         <action-icon
+          v-if="showActions"
           @click="deleteItem(item)"
           icon="mdi-delete"
           tooltip="Eliminar"
         />
-                <action-icon
+        <action-icon
           @click="voreOfertes(item.id)"
           icon="mdi-briefcase"
           tooltip="Vore ofertes"
@@ -91,8 +91,9 @@
 
 <script>
 import DialogDelete from "../components/DialogDelete";
-import ActionIcon from '../components/ActionIcon'
-import DialogEmpresa from '../components/DialogEmpresa.vue';
+import ActionIcon from "../components/ActionIcon";
+import DialogEmpresa from "../components/DialogEmpresa.vue";
+import Rol from '../service/Rol'
 
 export default {
   name: "empresas",
@@ -128,6 +129,12 @@ export default {
     items() {
       return this.$store.state.empresas;
     },
+    showActions() {
+      return !Rol.imAlumno();
+    },
+    editIcon() {
+      return Rol.imEmpresa() ? "mdi-pencil" : "mdi-eye";
+    },
   },
 
   watch: {
@@ -145,17 +152,17 @@ export default {
 
   methods: {
     initialize() {
-      this.$store.dispatch("getTable", this.table);
+      this.$store.dispatch("getTable", {table: this.table});
       this.$store.commit("setTitle", {
-        title: "Empreses", 
-        helpPage: 'empresas'
+        title: "Empreses",
+        helpPage: "empresas",
       });
     },
     getDate(dateString) {
       return dateString ? dateString.split("T")[0] : "";
     },
     voreOfertes(id) {
-      this.$router.push('/ofertas?empresa=' + id)
+      this.$router.push("/ofertas?empresa=" + id);
     },
     editItem(item) {
       this.editedIndex = this.items.indexOf(item);
@@ -170,30 +177,24 @@ export default {
 
     close(item) {
       if (item) {
-              this.$store.dispatch("saveItemToTable", {
-        table: this.table,
-        item,
-      });
-      }
-      this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = {};
-        this.editedIndex = -1;
-      });
-    },
-
-    closeDelete(save) {
-      if (save) {
-        this.$store.dispatch("delItemFromTable", {
+        this.$store.dispatch("saveItemToTable", {
           table: this.table,
-          id: this.editedItem.id,
+          item,
         });
       }
-      this.dialogDelete = false;
-      this.$nextTick(() => {
+      this.dialog = false;
+//      this.$nextTick(() => {
         this.editedItem = {};
         this.editedIndex = -1;
-      });
+  //    });
+    },
+
+    closeDelete() {
+      this.dialogDelete = false;
+//      this.$nextTick(() => {
+        this.editedItem = {};
+        this.editedIndex = -1;
+  //    });
     },
   },
 };

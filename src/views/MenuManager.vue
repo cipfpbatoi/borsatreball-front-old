@@ -11,9 +11,11 @@
         color="blue-grey"
       ></v-text-field>
     </v-card-title>
+
     <v-dialog v-model="dialogDelete" max-width="500px">
       <dialog-delete
         :title="editedItem.text"
+            :itemId="editedItem.id"
         itemType="menu"
         @close="closeDelete"
       />
@@ -44,7 +46,7 @@
                 Nou Item
               </v-btn>
             </template>
-            <dialog-empresa :editedItem="editedItem" @close="close" />
+            <dialog-menu :editedItem="editedItem" @close="close" />
           </v-dialog>
         </v-toolbar>
       </template>
@@ -75,15 +77,17 @@
 
 <script>
 import DialogDelete from "../components/DialogDelete";
+import DialogMenu from "../components/DialogMenu";
 import ActionIcon from "../components/ActionIcon";
 
 import Rol from "@/service/Rol";
 
 export default {
-  name: "menu",
+  name: "MenuManager",
   components: {
     ActionIcon,
     DialogDelete,
+    DialogMenu,
   },
   data: () => ({
     table: "menu",
@@ -155,10 +159,10 @@ export default {
         });
       }
       this.dialog = false;
-      this.$nextTick(() => {
+//      this.$nextTick(() => {
         this.editedItem = {};
         this.editedIndex = -1;
-      });
+  //    });
     },
 
     closeDelete(save) {
@@ -169,10 +173,10 @@ export default {
         });
       }
       this.dialogDelete = false;
-      this.$nextTick(() => {
+//      this.$nextTick(() => {
         this.editedItem = {};
         this.editedIndex = -1;
-      });
+  //    });
     },
   },
 };

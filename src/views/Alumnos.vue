@@ -10,14 +10,15 @@
         hide-details
       ></v-text-field>
     </v-card-title>
-    <v-dialog v-model="dialog" max-width="580px">
-      <dialog-alumno :editedItem="editedItem" @close="close" />
+    <v-dialog v-model="dialogChange" max-width="580px">
+      <dialog-alumno :editedItem="editedItem" @close="close('change')" />
     </v-dialog>
     <v-dialog v-model="dialogDelete" max-width="500px">
       <dialog-delete
         :title="editedItem.nombre + ' ' + editedItem.apellidos"
+            :itemId="editedItem.id"
         :itemType="table"
-        @close="closeDelete"
+        @close="close('delete')"
       />
     </v-dialog>
     <v-dialog v-model="dialogValida" max-width="500px">
@@ -52,10 +53,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn @click="closeValida">Cancel·lar</v-btn>
-          <v-btn color="blue-grey" @click="saveCicloValidation"
-            >Guardar</v-btn
-          >
+          <v-btn @click="close('valida')">Cancel·lar</v-btn>
+          <v-btn color="blue-grey" @click="saveCicloValidation">Guardar</v-btn>
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
@@ -70,7 +69,7 @@
       single-expand
       show-expand
     >
-      <template v-slot:item.nombre="{ item }">
+      <template v-slot:item.apellidos="{ item }">
         {{ item.apellidos + ", " + item.nombre }}
       </template>
       <template v-slot:item.updated_at="{ item }">
@@ -89,20 +88,26 @@
       </template>
       <template v-slot:item.actions="{ item }">
         <action-icon
+          v-if="showActions"
           @click="editItem(item)"
-          icon="mdi-pencil"
+          :icon="editIcon"
           tooltip="Editar"
         />
         <action-icon
+          v-if="showActions"
           @click="deleteItem(item)"
           icon="mdi-delete"
           tooltip="Eliminar"
         />
       </template>
+      <template v-slot:expanded-item="{ headers, item }">
+        <td :colspan="headers.length">
+          <expanded-alumno :item="item" />
+        </td>
+      </template>
       <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize">
-          No hi ha dades que mostrar
-        </v-btn>
+        <p>No hi ha dades que mostrar</p>
+        <v-btn color="primary" @click="initialize"> Reset </v-btn>
       </template>
     </v-data-table>
   </v-card>
@@ -114,6 +119,8 @@ import AlumnoCv from "../components/AlumnoCv.vue";
 import DialogAlumno from "../components/DialogAlumno";
 import DialogDelete from "../components/DialogDelete";
 import ActionIcon from "../components/ActionIcon";
+import ExpandedAlumno from "../components/ExpandedAlumno.vue";
+import Rol from "../service/Rol";
 
 export default {
   name: "alumnos",
@@ -123,11 +130,12 @@ export default {
     DialogAlumno,
     DialogDelete,
     ActionIcon,
+    ExpandedAlumno,
   },
   data: () => ({
     table: "alumnos",
     search: "",
-    dialog: false,
+    dialogChange: false,
     dialogDelete: false,
     dialogValida: false,
     headers: [
@@ -135,7 +143,7 @@ export default {
         text: "Nom",
         align: "start",
         sortable: true,
-        value: "nombre",
+        value: "apellidos",
       },
       { text: "Cicles", value: "ciclos" },
       { text: "C.V.", value: "cv_enlace" },
@@ -154,17 +162,23 @@ export default {
     items() {
       return this.$store.state.alumnos;
     },
+    showActions() {
+      return !Rol.imEmpresa();
+    },
+    editIcon() {
+      return Rol.imAlumno() ? "mdi-pencil" : "mdi-eye";
+    },
   },
 
   watch: {
-    dialog(val) {
-      val || this.close();
+    dialogChange(val) {
+      val || this.close('change');
     },
     dialogDelete(val) {
-      val || this.closeDelete();
+      val || this.close('delete');
     },
     dialogValida(val) {
-      val || this.closeValida();
+      val || this.close('valida');
     },
   },
 
@@ -174,11 +188,11 @@ export default {
 
   methods: {
     initialize() {
-      this.$store.dispatch("getTable", this.table);
+      this.$store.dispatch("getTable", {table: this.table});
       this.$store.commit("setTitle", {
-              title: "Alumnes", 
-        helpPage: 'alumnos'
-      })
+        title: "Alumnes",
+        helpPage: "alumnos",
+      });
     },
 
     getCicloName(id) {
@@ -202,7 +216,7 @@ export default {
       this.editedItem.ciclosSelect = this.editedItem.ciclos.map(
         (item) => item.id_ciclo
       );
-      this.dialog = true;
+      this.dialogChange = true;
     },
     deleteItem(item) {
       this.editedIndex = this.items.indexOf(item);
@@ -210,55 +224,33 @@ export default {
       this.dialogDelete = true;
     },
 
-    close(save) {
-      if (save) {
-        this.$store.dispatch("saveItemToTable", {
-          table: this.table,
-          item: this.editedItem,
-        });
+    close(dialog) {
+      switch (dialog) {
+        case 'change':
+          this.dialogChange = false
+          break
+        case 'delete':
+          this.dialogDelete = false
+          break
+        case 'valida':
+          this.dialogValida = false
       }
-      this.dialog = false;
-      this.$nextTick(() => {
+//      this.$nextTick(() => {
         this.editedItem = {};
         this.editedIndex = -1;
-      });
-    },
-
-    closeDelete(save) {
-      if (save) {
-        this.$store.dispatch("delItemFromTable", {
-          table: this.table,
-          id: this.editedItem.id,
-        });
-      }
-      this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.editedItem = {};
-        this.editedIndex = -1;
-      });
-    },
-
-    closeValida() {
-      this.dialogValida = false;
-      this.$nextTick(() => {
         this.editedCiclo = {
           ciclo: {},
           alumno: "",
         };
-      });
+//      });
     },
 
     saveCicloValidation() {
-      this.$store.dispatch("changeValidity", this.editedCiclo.ciclo);
-      this.closeValida();
+      this.$store.dispatch("changeAlumnoValidity", this.editedCiclo.ciclo);
+      this.close('valida');
     },
   },
 };
 </script>
 
 
-<style scoped>
-a {
-  text-decoration: none;
-}
-</style>

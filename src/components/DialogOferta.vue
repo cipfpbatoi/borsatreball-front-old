@@ -1,4 +1,6 @@
 <template>
+    <validation-observer ref="observer" v-slot="{ handleSubmit }">
+      <v-form @submit.prevent="handleSubmit(saveItem)" lazy-validation>
   <v-card>
     <v-card-title>
       <span class="headline">{{ title }}</span>
@@ -45,13 +47,20 @@
             ></v-select>
           </v-col>
           <v-col cols="12" sm="2" md="2">
+                <validation-provider
+                  name="Telèfon"
+                  v-slot="{ errors }"
+                  rules="max:30"
+                  vid="telefono"
+                >
             <v-text-field
               label="Telèfon"
               placeholder="Telèfon"
               v-model="editedItem.telefono"
-              counter="25"
-              required
+              counter="30"
             ></v-text-field>
+            <span>{{ errors[0] }}</span>
+                </validation-provider>
           </v-col>
           <v-col cols="12" sm="4" md="4">
             <v-text-field
@@ -120,7 +129,7 @@
           </v-col>
           <v-col cols="12" sm="2" md="2">
             <v-checkbox
-              v-model="editedItem.estidiando"
+              v-model="editedItem.estudiando"
               label="Inclou estidiants"
               persistent-hint
             ></v-checkbox>
@@ -130,17 +139,20 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn @click="closeDialog(false)">
+      <v-btn @click="$emit('close')">
         {{ showSave ? "Cancel·la" : "Tanca" }}
       </v-btn>
-      <v-btn v-if="showSave" color="blue-grey" @click="closeDialog(true)">
+      <v-btn type="submit" v-if="showSave" color="blue-grey">
         Guarda
       </v-btn>
     </v-card-actions>
   </v-card>
+      </v-form>
+    </validation-observer>
 </template>
 
 <script>
+import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import Rol from "@/service/Rol";
 
 import CiclosSelect from "./CiclosSelect";
@@ -149,6 +161,8 @@ export default {
   name: "DialogOferta",
   components: {
     CiclosSelect,
+    ValidationObserver,
+    ValidationProvider,
   },
   props: {
     editedItem: {
@@ -187,16 +201,28 @@ export default {
   },
   created() {
     if (this.imResponsable && !this.empresas.length) {
-      this.$store.dispatch("getTable", "empresas");
+      this.$store.dispatch("getTable", {table: "empresas"});
     }
+    console.log(this.editedItem)
+    alert(this.editedItem.empresa)
   },
   methods: {
-    closeDialog(save) {
-      if (save) {
-        this.$emit("close", this.editedItem);
-      } else {
-        this.$emit("close");
-      }
+    saveItem() {
+      this.$store.dispatch("saveItemToTable", {
+        table: 'ofertas',
+        item: this.editedItem,
+      })
+              .then(() => this.$emit("close"))
+        .catch((error) => {
+          let formErrors = {};
+          try {
+            formErrors = error.response.data.errors;
+            console.log(formErrors)
+          } catch {
+            this.$store.commit("setError", error);
+            return;
+          }
+        })
     },
     rellenaContacto() {
       const empresa = this.$store.getters.getEmpresaById(

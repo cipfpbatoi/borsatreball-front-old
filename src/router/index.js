@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '../store'
+
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Logout from '../views/Logout.vue'
@@ -14,28 +16,6 @@ import Privacitat from '../views/Privacitat.vue'
 import NotFound from '../views/NotFound.vue'
 
 Vue.use(VueRouter)
-
-const ifNotAuthenticated = (to, from, next) => {
-  if (to === from) {
-    return
-  }
-  if (!localStorage.getItem('user')) {
-    next()
-    return
-  }
-  alert('Debes desloguearte primero');
-  next('/')
-}
-const ifAuthenticated = (to, from, next) => {
-  if (to === from) {
-    return
-  }
-  if (localStorage.getItem('user')) {
-    next()
-    return
-  }
-  next('/login')
-}
 
 const routes = [
   {
@@ -52,47 +32,57 @@ const routes = [
     path: '/logout',
     name: 'logout',
     component: Logout,
-    beforeEnter: ifAuthenticated,
   },
   {
     path: '/register',
     name: 'Register',
     component: Register,
-    beforeEnter: ifNotAuthenticated,
   },
   {
     path: '/ofertas',
     name: 'Ofertas',
     component: Ofertas,
-    beforeEnter: ifAuthenticated,
+    meta: {
+      requireAuth: true,
+    },
   },
   {
     path: '/ofertas-arxiu',
-    name: 'Ofertas',
+    name: 'OfertasArxiu',
     component: Ofertas,
-    beforeEnter: ifAuthenticated,
+    meta: {
+      requireAuth: true,
+    },
   },
   {
     path: '/alumnos',
     name: 'Alumnos',
     component: Alumnos,
-    beforeEnter: ifAuthenticated,
+    meta: {
+      requireAuth: true,
+    },
   },
   {
     path: '/empresas',
     name: 'Empresas',
     component: Empresas,
-    beforeEnter: ifAuthenticated,
-  },{
+    meta: {
+      requireAuth: true,
+    },
+  }, {
     path: '/ciclos',
     name: 'Ciclos',
     component: Ciclos,
-    beforeEnter: ifAuthenticated,
-  },{
+    meta: {
+      requireAuth: true,
+    },
+  }, {
     path: '/responsables',
     name: 'Responsables',
     component: Responsables,
-    beforeEnter: ifAuthenticated,
+    meta: {
+      requireAuth: true,
+    },
   },
   {
     path: '/notfound',
@@ -102,6 +92,9 @@ const routes = [
     path: '/menu',
     name: 'menuManager',
     component: MenuManager,
+    meta: {
+      requireAuth: true,
+    },
   }, {
     path: '/privacitat',
     name: 'Privacitat',
@@ -125,6 +118,23 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requireAuth) {
+    if (store.state.user.access_token) {
+      next();
+    }
+    else {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    }
+  }
+  else {
+    next();
+  }
 })
 
 export default router

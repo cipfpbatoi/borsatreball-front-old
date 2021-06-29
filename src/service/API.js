@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
+import router from '@/router'
 
 const API_URL = process.env.VUE_APP_API
 const DEBUG = true
@@ -18,8 +19,15 @@ const alumns = {
         }),
 }
 
+const ofertas = {
+    changeValidity: (payload) => axios.put(`${API_URL}/ofertas/${payload.id_oferta}/validar`,
+        {
+            'validada': Number(payload.validada)
+        }),
+}
+
 const table = {
-    getAll: (table) => axios.get(`${API_URL}/${table}`),
+    getAll: (table, params) => axios.get(`${API_URL}/${table}` + (params?'?'+params:'')),
     addItem: (table, item) => axios.post(`${API_URL}/${table}`, item),
     modifyItem: (table, item) => axios.put(`${API_URL}/${table}/${item.id}`, item),
     delItem: (table, id) => axios.delete(`${API_URL}/${table}/${id}`),
@@ -49,7 +57,20 @@ axios.interceptors.response.use((response) => {
     return response
 }, (error) => {
     if (error.response) {
-        console.error('Response error ' + error.response.status + ' (' + error.response.statusText + ')')
+        if ((error.response.status === 401 && store.state.user.access_token)
+            || error.response.status === 421 && /expired/.test(error.response.data.message)) {
+            store.commit('logoutUser')
+            error.response.data.errors = (error.response.status === 421)
+                ? 'La teua sessió ha caducat. Has de tornar-te a loguejar'
+                : 'Pàgina restringida. Has de loguejar-te'
+
+            if (/\/login/.test(router.currentRoute.path)) {
+                router.replace({
+                    path: 'login',
+                    query: { redirect: router.currentRoute.path },
+                })
+            }
+        }
     }
     if (DEBUG) {
         console.info('Response error: ', error)
@@ -60,5 +81,6 @@ axios.interceptors.response.use((response) => {
 export default {
     users,
     alumns,
+    ofertas,
     table,
 };

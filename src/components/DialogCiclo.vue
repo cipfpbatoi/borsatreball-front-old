@@ -6,74 +6,135 @@
     <v-card-subtitle v-if="!showSave">
       (els canvis NO es guardaran)
     </v-card-subtitle>
-    <v-card-text>
-      <v-container>
-        <v-row>
-          <v-col cols="12" sm="2" md="2">
-            <v-text-field
-              v-model="editedItem.id"
-              label="Id"
-              readonly
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="4" md="4">
-            <v-text-field
-              v-model="editedItem.codigo"
-              label="Codi"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="6" md="6">
-            <v-text-field
-              v-model="editedItem.ciclo"
-              label="Cicle"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="12" md="12">
-            <v-text-field
-              v-model="editedItem.vCiclo"
-              label="Nom"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="5" md="5">
-            <v-select
-              placeholder="Departament"
-              :items="departamentos"
-              v-model="editedItem.Dept"
-              item-text="nombre"
-              item-value="cod"
-              required
-              single-line
-            ></v-select>
-          </v-col>
-          <v-col cols="12" sm="7" md="7">
-            <v-select
-              placeholder="Responsable"
-              :items="responsables"
-              v-model="editedItem.responsable"
-              item-text="nombre"
-              item-value="id"
-              required
-              single-line
-            ></v-select>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-card-text>
-    <v-card-actions>
-      <v-spacer></v-spacer>
-      <v-btn @click="closeDialog(false)">
-        {{ showSave ? "Cancel·la" : "Tanca" }}
-      </v-btn>
-      <v-btn v-if="showSave" color="blue-grey" @click="closeDialog(true)">
-        Guarda
-      </v-btn>
-    </v-card-actions>
+    <validation-observer ref="observer" v-slot="{ handleSubmit }">
+      <v-form @submit.prevent="handleSubmit(submit)" lazy-validation>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" sm="1" md="1">
+                <v-text-field
+                  v-model="editedItem.id"
+                  label="Id"
+                  readonly
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="3" md="3">
+                <validation-provider
+                  name="Codi"
+                  v-slot="{ errors }"
+                  rules="required|max:4"
+                  vid="codigo"
+                >
+                  <v-text-field
+                    v-model="editedItem.codigo"
+                    label="Codi"
+                    :error-messages="errors"
+                    counter="4"
+                  ></v-text-field>
+                </validation-provider>
+              </v-col>
+              <v-col cols="12" sm="8" md="8">
+                <validation-provider
+                  name="Codi"
+                  v-slot="{ errors }"
+                  rules="required|max:50"
+                  vid="ciclo"
+                >
+                  <v-text-field
+                    v-model="editedItem.ciclo"
+                    label="Cicle"
+                    counter="50"
+                    :error-messages="errors"
+                  ></v-text-field>
+                </validation-provider>
+              </v-col>
+              <v-col cols="12" sm="12" md="12">
+                <validation-provider
+                  name="Codi"
+                  v-slot="{ errors }"
+                  rules="required|max:80"
+                  vid="vCiclo"
+                >
+                  <v-text-field
+                    v-model="editedItem.vCiclo"
+                    label="Nom"
+                    counter="80"
+                    :error-messages="errors"
+                  ></v-text-field>
+                </validation-provider>
+              </v-col>
+              <v-col cols="12" sm="5" md="5">
+                <validation-provider
+                  name="Codi"
+                  v-slot="{ errors }"
+                  rules="required"
+                  vid="Dept"
+                >
+                  <v-select
+                    placeholder="Departament"
+                    :items="departamentos"
+                    v-model="editedItem.Dept"
+                    item-text="nombre"
+                    item-value="cod"
+                    single-line
+                    :error-messages="errors"
+                  ></v-select>
+                </validation-provider>
+              </v-col>
+              <v-col cols="12" sm="7" md="7">
+                <validation-provider
+                  name="Codi"
+                  v-slot="{ errors }"
+                  rules="required"
+                  vid="responsable"
+                >
+                  <v-select
+                    placeholder="Responsable"
+                    :items="responsables"
+                    v-model="editedItem.responsable"
+                    item-text="apellidos"
+                    item-value="id"
+                    single-line
+                    :error-messages="errors"
+                  ></v-select>
+                </validation-provider>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <help-button v-if="helpPage" :page="helpPage"></help-button>
+          <v-spacer></v-spacer>
+          <v-btn @click="closeDialog">
+            {{ showSave ? "Cancel·la" : "Tanca" }}
+          </v-btn>
+          <v-btn type="submit" v-if="showSave" color="blue-grey">
+            Guarda
+          </v-btn>
+        </v-card-actions>
+      </v-form>
+    </validation-observer>
   </v-card>
 </template>
 
 <script>
+import { ValidationProvider, ValidationObserver } from "vee-validate";
+import { extend, localize } from "vee-validate";
+import es from "vee-validate/dist/locale/es.json";
+import { required, max } from "vee-validate/dist/rules";
+import HelpButton from "../components/HelpButton";
+
+localize("es", es);
+extend("required", required);
+extend("max", max);
+
 export default {
   name: "DialogCiclo",
+  components: {
+    HelpButton,
+    ValidationObserver,
+    ValidationProvider,
+  },
   props: {
     editedItem: {
       type: Object,
@@ -85,44 +146,63 @@ export default {
     },
   },
   mounted() {
-      if (!this.responsables.length) {
-          this.$store.dispatch('loadTable', 'responsables')
-      }
+    this.$store.dispatch("getTable", {table: "responsables"});
   },
   data: () => ({
-      showSave: true
+    showSave: true,
+    table: "ciclos",
+    helpPage: "guardaciclo",
   }),
   computed: {
     departamentos() {
       return this.$store.state.departamentos;
     },
     responsables() {
-      return this.$store.getters.responsables;
+      return this.$store.state.responsables;
     },
     title() {
-      return this.editedItem.id ? 'Editar Cicle':'Nou Cicle'
+      return this.editedItem.id ? "Editar Cicle" : "Nou Cicle";
     },
-    ciclosCategorized() {
-      return this.$store.state.ciclosCategorized;
-    },
-    empresas() {
-      return this.$store.state.empresas;
-    },
-  },
-  created() {
-    if (this.imResponsable && !this.empresas.length) {
-      this.$store.dispatch("getTable", "empresas");
-    }
   },
   methods: {
-    closeDialog(save) {
-      if (save) {
-        this.$emit("close", this.editedItem);
-      } else {
-        this.$emit("close");
+    submit() {
+      const item = {
+        codigo: this.editedItem.codigo,
+        ciclo: this.editedItem.ciclo,
+        Dept: this.editedItem.Dept,
+        cDept: this.$store.getters.nomDept(this.editedItem.Dept),
+        vDept: this.$store.getters.nomDept(this.editedItem.Dept),
+        responsable: this.editedItem.responsable,
+        vCiclo: this.editedItem.vCiclo,
+        cCiclo: this.editedItem.vCiclo,
+      };
+      if (this.editedItem.id) {
+        item.id = this.editedItem.id;
       }
+      this.$store
+        .dispatch("saveItemToTable", {
+          table: this.table,
+          item,
+        })
+        .then(() => this.closeDialog())
+        .catch((error) => {
+          let formErrors = {};
+          try {
+            formErrors = error.response.data.errors;
+          } catch {
+            this.$store.commit("setError", error);
+            return;
+          }
+          if (typeof formErrors === "object") {
+            this.$refs.observer.setErrors(formErrors);
+          } else {
+            this.$store.commit("setError", error);
+          }
+        });
     },
-    rellenaContacto() {},
+    closeDialog() {
+      this.$emit("close");
+    },
   },
 };
 </script>

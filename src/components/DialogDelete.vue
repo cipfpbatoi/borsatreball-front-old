@@ -1,40 +1,45 @@
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title class="headline">
       {{ title }}
     </v-card-title>
     <v-card-text>
       <p>{{ dialogText }}</p>
       <p v-if="deleteUser">
-        <strong>ATENCIÓ:</strong> Si continues s'esborraran DEFINITIVAMENT totes les seues dades
-        així com el seu usuari.
+        <strong>ATENCIÓ:</strong> Si continues s'esborraran DEFINITIVAMENT totes
+        les seues dades així com el seu usuari.
       </p>
       <p><strong>¿Vols continuar?</strong></p>
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn @click="$emit('close', false)">Cancel·lar</v-btn>
-      <v-btn color="error" @click="$emit('close', true)"
-        >Esborrar</v-btn
-      >
+      <v-btn @click="$emit('close')">Cancel·lar</v-btn>
+      <v-btn color="error" @click="delItem">Esborrar</v-btn>
       <v-spacer></v-spacer>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
+import Rol from "../service/Rol";
+
 export default {
   name: "DialogDelete",
-  props: {
-    title: {
-      type: String,
-      default: "Eliminar element",
-    },
-    itemType: {
-      type: String,
-      required: true,
-    },
-  },
+  props: ['title', 'itemId', 'itemType'],
+  // props: {
+  //   title: {
+  //     type: String,
+  //     default: "Eliminar element",
+  //   },
+  //   itemId: {
+  //     type: ,
+  //     required: 'true'
+  //   },
+  //   itemType: {
+  //     type: String,
+  //     required: true,
+  //   },
+  // },
   computed: {
     deleteUser() {
       switch (this.itemType) {
@@ -53,12 +58,28 @@ export default {
           return "aquest alumne";
         case "ofertas":
           return "aquesta oferta";
+        case "ciclos":
+          return "aquest cicle";
+        case "responsables":
+          return "aquest responsable";
         default:
           return "aquest element";
       }
     },
     dialogText() {
-      return "Va a esborrar-se " + this.typeText
+      return "Va a esborrar-se " + this.typeText;
+    },
+  },
+  methods: {
+    delItem() {
+      this.$store.dispatch("delItemFromTable", {
+        table: this.itemType,
+        id: this.itemId,
+      });
+      if (this.deleteUser && !Rol.imResponsable()) {
+        this.$store.commit("logoutUser");
+      }
+      this.$emit("close");
     },
   },
 };

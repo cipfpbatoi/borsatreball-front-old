@@ -1,15 +1,6 @@
 <template>
-    <v-data-table
-      :headers="headers"
-      :items="items"
-      sort-by="Dept"
-      class="elevation-1"
-      :search="search"
-    >
-          <template v-slot:top>
-      <v-toolbar
-        flat
-      >
+  <v-card>
+    <v-card-title>
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
@@ -18,33 +9,25 @@
         hide-details
         color="blue-grey"
       ></v-text-field>
-        <v-spacer></v-spacer>
-    <v-dialog v-model="dialog" max-width="580px">
-                <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              color="blue-grey"
-              dark
-              class="mb-2"
-              v-bind="attrs"
-              v-on="on"
-            >
-              Nou Cicle
-            </v-btn>
-          </template>
-          <v-card>
-
-      <dialog-ciclo :editedItem="editedItem" @close="close" />
-          </v-card>
-    </v-dialog>
-    <v-dialog v-model="dialogDelete" max-width="500px">
-      <dialog-delete
-        :title="editedItem.ciclo"
-        :itemType="table"
-        @close="closeDelete"
-      />
-    </v-dialog>
-      </v-toolbar>
-      </template>
+      <v-spacer></v-spacer>
+      <v-dialog v-model="dialog" max-width="580px">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn color="blue-grey" dark class="mb-2" v-bind="attrs" v-on="on">
+            Nou Cicle
+          </v-btn>
+        </template>
+        <v-card>
+          <dialog-ciclo :editedItem="editedItem" @close="close" />
+        </v-card>
+      </v-dialog>
+    </v-card-title>
+    <v-data-table
+      :headers="headers"
+      :items="items"
+      sort-by="Dept"
+      class="elevation-1"
+      :search="search"
+    >
       <template v-slot:item.Dept="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
@@ -53,19 +36,15 @@
           <span>{{ item.vDept }}</span>
         </v-tooltip>
       </template>
-            <template v-slot:item.grau="{ item }">
-                {{ item.codigo.startsWith('CFS') ? 'Superior':'Mitjà'}}
+      <template v-slot:item.grau="{ item }">
+        {{ item.codigo.startsWith("CFS") ? "Superior" : "Mitjà" }}
       </template>
       <template v-slot:item.actions="{ item }">
         <action-icon
+          v-if="imResponsable"
           @click="editItem(item)"
           icon="mdi-pencil"
           tooltip="Editar"
-        />
-        <action-icon
-          @click="deleteItem(item)"
-          icon="mdi-delete"
-          tooltip="Eliminar"
         />
       </template>
 
@@ -74,17 +53,16 @@
         <v-btn color="blue-grey" @click="initialize"> Reset </v-btn>
       </template>
     </v-data-table>
+  </v-card>
 </template>
 
 <script>
-import DialogDelete from "../components/DialogDelete";
 import ActionIcon from "../components/ActionIcon";
 import DialogCiclo from "../components/DialogCiclo.vue";
-
+import Rol from "../service/Rol";
 export default {
   name: "ciclos",
   components: {
-    DialogDelete,
     ActionIcon,
     DialogCiclo,
   },
@@ -99,7 +77,7 @@ export default {
       { text: "Grau", value: "grau" },
       { text: "Cicle", value: "ciclo" },
       { text: "Descrip", value: "vCiclo" },
-      { text: "Responsable", value: "responsable" },
+      { text: "Responsable", value: "name" },
       { text: "Actions", value: "actions", sortable: false },
     ],
     editedIndex: -1,
@@ -110,6 +88,9 @@ export default {
     items() {
       return this.$store.state.ciclos;
     },
+    imResponsable() {
+      return Rol.imResponsable()
+    }
   },
 
   watch: {
@@ -127,10 +108,10 @@ export default {
 
   methods: {
     initialize() {
-      this.$store.dispatch("getTable", this.table);
+      this.$store.dispatch("getTable", {table: this.table});
       this.$store.commit("setTitle", {
-        title: "Cicles", 
-        helpPage: 'ciclos'
+        title: "Cicles",
+        helpPage: "ciclos",
       });
     },
     editItem(item) {
@@ -138,36 +119,9 @@ export default {
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
-    deleteItem(item) {
-      this.editedIndex = this.items.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialogDelete = true;
-    },
 
-    close(item) {
-      if (item) {
-        item.vDept = this.$store.getters.nomDept(item.Dept)
-        item.cDept = this.$store.getters.nomDept(item.Dept)
-        this.$store.dispatch("saveItemToTable", {
-          table: this.table,
-          item,
-        });
-      }
+    close() {
       this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = {};
-        this.editedIndex = -1;
-      });
-    },
-
-    closeDelete(save) {
-      if (save) {
-        this.$store.dispatch("delItemFromTable", {
-          table: this.table,
-          id: this.editedItem.id,
-        });
-      }
-      this.dialogDelete = false;
       this.$nextTick(() => {
         this.editedItem = {};
         this.editedIndex = -1;

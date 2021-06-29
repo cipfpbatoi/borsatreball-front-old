@@ -12,13 +12,8 @@ export default {
     getOfertasByEmpresa: (state) => (id) => {
         return state.ofertas.filter((item) => item.id_empresa === Number(id))
     },
-    responsables: state => {
-        return state.responsables
-        // return state.users.filter((item) => 
-        // Rol.imResponsable(item.rol))
-    },
     nomDept: (state) => (cod) => {
-        return state.departamentos.find((item) => item.cod === cod)
+        return state.departamentos.find((item) => item.cod === cod).nombre
     },
     getUserName: state => {
          return state.user.name

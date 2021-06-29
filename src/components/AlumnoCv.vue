@@ -2,7 +2,7 @@
   <a
     v-if="cv_enlace"
     :title="cv_enlace"
-    :href="cvHref"
+    :href="cv_enlace"
     target="_blank"
   >
     <v-icon medium>mdi-book-account</v-icon>
@@ -18,12 +18,11 @@ export default {
       required: false,
     },
   },
-  computed: {
-      cvHref() {
-          return this.cv_enlace.startsWith('http')
-          ? this.cv_enlace
-          : 'https://' + this.cv_enlace
-      }
-  }
 };
 </script>
+
+<style scoped>
+a {
+  text-decoration: none;
+}
+</style>

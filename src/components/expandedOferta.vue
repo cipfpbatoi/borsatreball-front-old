@@ -24,7 +24,7 @@
         <v-col v-else cols="12" sm="12" md="12">
           <p>
             <strong>Descripció: </strong>
-            {{ item.descripcion }}
+            <span>{{ item.descripcion }}</span>
           </p>
         </v-col>
       </v-card-text>
@@ -43,7 +43,7 @@ import Rol from "@/service/Rol";
 import AlumnosInteresados from "./AlumnosInteresados";
 
 export default {
-  name: "OfertaExpanded",
+  name: "ExpandedOferta",
   components: {
     AlumnosInteresados,
   },

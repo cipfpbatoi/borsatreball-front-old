@@ -18,15 +18,14 @@
     </v-app-bar>
 
     <v-main>
-      <v-row>
-        <v-col cols="11" md="4">
-          <div v-for="(error, index) in errors" :key="index">
-            <v-alert v-model="error.show" :type="error.type" dismissible>
-              {{ error.msg }}
-            </v-alert>
+      <v-row justify="center"><v-col cols="11">
+          <div v-for="(message, i) in errors" :key="i">
+            <v-alert v-model="message.show" :type="message.type" dismissible>{{
+              message.msg
+            }}</v-alert>
           </div>
-        </v-col>
-      </v-row>
+      </v-col></v-row>
+
       <router-view />
     </v-main>
     <v-footer color="blue-grey" app>
@@ -51,26 +50,7 @@ export default {
     HelpButton,
   },
   created() {
-    if (localStorage.user) {
-      const user = JSON.parse(localStorage.user);
-      const expiresDate = new Date(user.expires_at);
-      //#############################
-      // BORRAR
-      // #########################
-      expiresDate.setHours(expiresDate.getHours() + 2);
-      if (isNaN(expiresDate.getDate()) || expiresDate < new Date()) {
-        this.$store.commit(
-          "setError",
-          "La teua sessió ha caducat a les " + expiresDate.toLocaleString()
-        );
-        this.$store.commit("logoutUser");
-        this.$router.push("/login");
-      } else {
-        this.$store.commit("loginUser", user);
-        this.$store.dispatch("getTable", "menu");
-      }
-    }
-    this.$store.dispatch("getTable", "ciclos");
+    this.$store.dispatch("getTable", {table: "ciclos"});
   },
   data: () => ({
     drawer: null,

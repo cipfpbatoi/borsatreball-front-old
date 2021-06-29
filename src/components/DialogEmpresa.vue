@@ -19,6 +19,7 @@
               v-model="editedItem.cif"
               label="CIF"
               counter="9"
+              :readonly="!showSave"
             ></v-text-field>
           </v-col>
           <v-col cols="7" sm="7" md="7">
@@ -26,6 +27,7 @@
               v-model="editedItem.nombre"
               label="Nom"
               counter="25"
+              :readonly="!showSave"
             ></v-text-field>
           </v-col>
           <v-col cols="12" sm="8" md="8">
@@ -35,6 +37,7 @@
                 label="Domicil·li"
                 counter="80"
                 rows="4"
+                :readonly="!showSave"
               ></v-textarea>
             </v-col>
           </v-col>
@@ -44,6 +47,7 @@
                 v-model="editedItem.localidad"
                 label="Localitat"
                 counter="25"
+                :readonly="!showSave"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="12" md="12">
@@ -51,6 +55,7 @@
                 v-model="editedItem.telefono"
                 label="Telèfon"
                 counter="25"
+                :readonly="!showSave"
               ></v-text-field>
             </v-col>
           </v-col>
@@ -60,6 +65,7 @@
               label="Pàgina web"
               counter="50"
               hint="Ha de començar per http:// o https://"
+              :readonly="!showSave"
             ></v-text-field>
           </v-col>
           <v-col cols="12" sm="5" md="5">
@@ -67,6 +73,7 @@
               v-model="editedItem.contacto"
               label="Persona de contacte"
               counter="50"
+              :readonly="!showSave"
             ></v-text-field>
           </v-col>
           <v-col cols="12" sm="12" md="12">
@@ -75,6 +82,7 @@
               label="Descripció"
               counter="200"
               rows="2"
+              :readonly="!showSave"
             ></v-textarea>
           </v-col>
         </v-row>
@@ -83,11 +91,10 @@
 
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn @click="closeDialog(false)"> {{ showSave?'Cancel·la':'Tanca'}} </v-btn>
-      <v-btn v-if="showSave"
-        color="blue-grey"
-        @click="closeDialog(true)"
-      >
+      <v-btn @click="closeDialog(false)">
+        {{ showSave ? "Cancel·la" : "Tanca" }}
+      </v-btn>
+      <v-btn v-if="showSave" color="blue-grey" @click="closeDialog(true)">
         Guarda
       </v-btn>
     </v-card-actions>
