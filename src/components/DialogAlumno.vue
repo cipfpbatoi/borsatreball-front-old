@@ -134,44 +134,11 @@
                   rules="required"
                   vid="ciclosSelect"
                 >
-                  <v-select
-                    :items="ciclosCategorized"
-                    v-model="editedItem.ciclosSelect"
-                    item-text="ciclo"
-                    item-value="id"
-                    label="Cicles finalitzats"
-                    multiple
-                    chips
-                    persistent-hint
-                    :readonly="!showSave"
-                    :error-messages="errors"
-                  >
-                    <template v-slot:selection="data">
-                      <v-chip
-                        v-bind="data.attrs"
-                        :input-value="data.selected"
-                        :close="showSave"
-                        @click="data.select"
-                        @click:close="removeItemSelected(data.item)"
-                      >
-                        {{ data.item.ciclo }}
-                      </v-chip>
-                    </template>
-                    <template v-slot:item="data">
-                      <template v-if="typeof data.item !== 'object'">
-                        <v-list-item-content
-                          v-text="data.item"
-                        ></v-list-item-content>
-                      </template>
-                      <template v-else>
-                        <v-list-item-content>
-                          <v-list-item-title
-                            v-html="data.item.ciclo"
-                          ></v-list-item-title>
-                        </v-list-item-content>
-                      </template>
-                    </template>
-                  </v-select>
+                  <ciclos-select
+                    :errors="errors"
+                    title="Cicles demanats"
+                    :item="editedItem"
+                  ></ciclos-select>
                 </validation-provider>
               </v-col>
             </v-row>
@@ -197,10 +164,11 @@
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 import HelpButton from "../components/HelpButton";
 import { extend } from "vee-validate";
+import CiclosSelect from "./CiclosSelect";
 
 extend("checked", {
   validate(value) {
-    return (value === 1 || value === true)
+    return value === 1 || value === true;
   },
   message: "Debes marcar esta opción para formar parte de la bolsa de trabajo",
 });
@@ -220,6 +188,7 @@ export default {
     HelpButton,
     ValidationObserver,
     ValidationProvider,
+    CiclosSelect,
   },
   props: {
     editedItem: {
@@ -259,18 +228,20 @@ export default {
       if (index >= 0) this.editedItem.ciclosSelect.splice(index, 1);
     },
     submit() {
-      const nuevosCiclos = this.editedItem.ciclos.filter(ciclo => ciclo.validado)
+      const nuevosCiclos = this.editedItem.ciclos.filter(
+        (ciclo) => ciclo.validado
+      );
       this.editedItem.ciclosSelect.forEach((cicloId) => {
         if (!nuevosCiclos.find((ciclo) => ciclo.id_ciclo === cicloId)) {
           nuevosCiclos.push({
             id_alumno: this.editedItem.id,
             id_ciclo: cicloId,
             any: null,
-            validado: false
-          })
+            validado: false,
+          });
         }
-      })
-      this.editedItem.ciclos = nuevosCiclos
+      });
+      this.editedItem.ciclos = nuevosCiclos;
       this.$store
         .dispatch("saveItemToTable", {
           table: this.table,

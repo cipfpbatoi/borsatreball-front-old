@@ -1,7 +1,6 @@
 <template>
   <v-card>
     <v-card-title>
-      <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
@@ -10,18 +9,20 @@
         hide-details
         color="blue-grey"
       ></v-text-field>
+      <v-spacer></v-spacer>
+      <v-dialog v-model="dialog" max-width="540px">
+        <dialog-empresa :editedItem="editedItem" @close="close" />
+      </v-dialog>
+      <v-dialog v-model="dialogDelete" max-width="500px">
+        <dialog-delete
+          :title="editedItem.nombre"
+          :itemId="editedItem.id"
+          :itemType="table"
+          @close="closeDelete"
+        />
+      </v-dialog>
     </v-card-title>
-    <v-dialog v-model="dialog" max-width="540px">
-      <dialog-empresa :editedItem="editedItem" @close="close" />
-    </v-dialog>
-    <v-dialog v-model="dialogDelete" max-width="500px">
-      <dialog-delete
-        :title="editedItem.nombre"
-            :itemId="editedItem.id"
-        :itemType="table"
-        @close="closeDelete"
-      />
-    </v-dialog>
+
     <v-data-table
       :headers="headers"
       :items="items"
@@ -93,7 +94,7 @@
 import DialogDelete from "../components/DialogDelete";
 import ActionIcon from "../components/ActionIcon";
 import DialogEmpresa from "../components/DialogEmpresa.vue";
-import Rol from '../service/Rol'
+import Rol from "../service/Rol";
 
 export default {
   name: "empresas",
@@ -152,7 +153,7 @@ export default {
 
   methods: {
     initialize() {
-      this.$store.dispatch("getTable", {table: this.table});
+      this.$store.dispatch("getTable", { table: this.table });
       this.$store.commit("setTitle", {
         title: "Empreses",
         helpPage: "empresas",
@@ -183,18 +184,18 @@ export default {
         });
       }
       this.dialog = false;
-//      this.$nextTick(() => {
-        this.editedItem = {};
-        this.editedIndex = -1;
-  //    });
+      //      this.$nextTick(() => {
+      this.editedItem = {};
+      this.editedIndex = -1;
+      //    });
     },
 
     closeDelete() {
       this.dialogDelete = false;
-//      this.$nextTick(() => {
-        this.editedItem = {};
-        this.editedIndex = -1;
-  //    });
+      //      this.$nextTick(() => {
+      this.editedItem = {};
+      this.editedIndex = -1;
+      //    });
     },
   },
 };

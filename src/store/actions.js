@@ -69,6 +69,14 @@ export default {
             }))
             .catch((err) => commit('setError', err))
     },
+    changeAlumnoInterest({ commit }, payload) {
+        API.alumns.changeInterest(payload)
+            .then((response) => commit('modifyItem', {
+                table: 'alumnos',
+                data: response.data.data
+            }))
+            .catch((err) => commit('setError', err))
+    },
     changeOfertaValidity({ commit }, payload) {
         API.ofertas.changeValidity(payload)
             .then((response) => commit('modifyItem', {

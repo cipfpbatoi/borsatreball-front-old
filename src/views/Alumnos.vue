@@ -1,7 +1,6 @@
 <template>
   <v-card>
     <v-card-title>
-      <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
@@ -9,56 +8,60 @@
         single-line
         hide-details
       ></v-text-field>
+      <v-spacer></v-spacer>
+      <v-dialog v-model="dialogChange" max-width="580px">
+        <dialog-alumno :editedItem="editedItem" @close="close('change')" />
+      </v-dialog>
+      <v-dialog v-model="dialogDelete" max-width="500px">
+        <dialog-delete
+          :title="editedItem.nombre + ' ' + editedItem.apellidos"
+          :itemId="editedItem.id"
+          :itemType="table"
+          @close="close('delete')"
+        />
+      </v-dialog>
+      <v-dialog v-model="dialogValida" max-width="500px">
+        <v-card>
+          <v-card-title>
+            {{ editedCiclo.alumno }}
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="6" md="6">
+                  <v-text-field
+                    v-model="editedCiclo.nomCiclo"
+                    label="Cicle"
+                    readonly
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="6" sm="3" md="3">
+                  <v-text-field
+                    v-model="editedCiclo.ciclo.any"
+                    label="Any"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="6" sm="3" md="3">
+                  <v-checkbox
+                    v-model="editedCiclo.ciclo.validado"
+                    label="Validat"
+                  ></v-checkbox>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn @click="close('valida')">Cancel·lar</v-btn>
+            <v-btn color="blue-grey" @click="saveCicloValidation"
+              >Guardar</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-card-title>
-    <v-dialog v-model="dialogChange" max-width="580px">
-      <dialog-alumno :editedItem="editedItem" @close="close('change')" />
-    </v-dialog>
-    <v-dialog v-model="dialogDelete" max-width="500px">
-      <dialog-delete
-        :title="editedItem.nombre + ' ' + editedItem.apellidos"
-            :itemId="editedItem.id"
-        :itemType="table"
-        @close="close('delete')"
-      />
-    </v-dialog>
-    <v-dialog v-model="dialogValida" max-width="500px">
-      <v-card>
-        <v-card-title>
-          {{ editedCiclo.alumno }}
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="6" md="6">
-                <v-text-field
-                  v-model="editedCiclo.nomCiclo"
-                  label="Cicle"
-                  readonly
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6" sm="3" md="3">
-                <v-text-field
-                  v-model="editedCiclo.ciclo.any"
-                  label="Any"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6" sm="3" md="3">
-                <v-checkbox
-                  v-model="editedCiclo.ciclo.validado"
-                  label="Validat"
-                ></v-checkbox>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn @click="close('valida')">Cancel·lar</v-btn>
-          <v-btn color="blue-grey" @click="saveCicloValidation">Guardar</v-btn>
-          <v-spacer></v-spacer>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+
     <v-data-table
       :headers="headers"
       :items="items"
@@ -172,13 +175,13 @@ export default {
 
   watch: {
     dialogChange(val) {
-      val || this.close('change');
+      val || this.close("change");
     },
     dialogDelete(val) {
-      val || this.close('delete');
+      val || this.close("delete");
     },
     dialogValida(val) {
-      val || this.close('valida');
+      val || this.close("valida");
     },
   },
 
@@ -188,7 +191,7 @@ export default {
 
   methods: {
     initialize() {
-      this.$store.dispatch("getTable", {table: this.table});
+      this.$store.dispatch("getTable", { table: this.table });
       this.$store.commit("setTitle", {
         title: "Alumnes",
         helpPage: "alumnos",
@@ -226,28 +229,28 @@ export default {
 
     close(dialog) {
       switch (dialog) {
-        case 'change':
-          this.dialogChange = false
-          break
-        case 'delete':
-          this.dialogDelete = false
-          break
-        case 'valida':
-          this.dialogValida = false
+        case "change":
+          this.dialogChange = false;
+          break;
+        case "delete":
+          this.dialogDelete = false;
+          break;
+        case "valida":
+          this.dialogValida = false;
       }
-//      this.$nextTick(() => {
-        this.editedItem = {};
-        this.editedIndex = -1;
-        this.editedCiclo = {
-          ciclo: {},
-          alumno: "",
-        };
-//      });
+      //      this.$nextTick(() => {
+      this.editedItem = {};
+      this.editedIndex = -1;
+      this.editedCiclo = {
+        ciclo: {},
+        alumno: "",
+      };
+      //      });
     },
 
     saveCicloValidation() {
       this.$store.dispatch("changeAlumnoValidity", this.editedCiclo.ciclo);
-      this.close('valida');
+      this.close("valida");
     },
   },
 };

@@ -15,8 +15,8 @@ export default {
     nomDept: (state) => (cod) => {
         return state.departamentos.find((item) => item.cod === cod).nombre
     },
-    getUserName: state => {
-         return state.user.name
+    getUser: state => {
+         return state.user
     },
     // imAdmin: state => {
     //     return state.user.rol == CONSTANTS.ROL_ADMINISTRADOR

@@ -20,7 +20,7 @@ export default {
   },
   computed: {
     ciclo() {
-      return this.$store.getters.getCicloById(this.data.id_ciclo);
+      return this.$store.getters.getCicloById(this.data.id_ciclo || this.data.id);
     },
     info() {
       return this.ciclo.ciclo + 

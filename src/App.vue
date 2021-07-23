@@ -69,7 +69,7 @@ export default {
       return this.$store.state.menu;
     },
     userName() {
-      const user = this.$store.getters.getUserName;
+      const user = this.$store.getters.getUser.name;
       return user ? "Hola " + user : "";
     },
     menuItems() {

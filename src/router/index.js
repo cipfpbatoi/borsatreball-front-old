@@ -39,6 +39,11 @@ const routes = [
     component: Register,
   },
   {
+    path: '/perfil',
+    name: 'Perfil',
+    component: Register,
+  },
+  {
     path: '/ofertas',
     name: 'Ofertas',
     component: Ofertas,
