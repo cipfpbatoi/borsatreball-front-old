@@ -4,7 +4,7 @@
     <v-card-text>
       <v-select
         :items="ciclosCategorized"
-        v-model="ciclos"
+        v-model="ciclosSelect"
         item-text="ciclo"
         item-value="id"
         label="Cicles finalitzats"
@@ -36,14 +36,13 @@
       </v-select>
       <div class="msgError">{{ errors }}</div>
       <div>NO es pot eliminar un cicle ja validat</div>
-      <div
-        >Els nous cicles hauran de ser validats pel responsable d'eixe
-        cicle</div
-      >
+      <div>
+        Els nous cicles hauran de ser validats pel responsable d'eixe cicle
+      </div>
     </v-card-text>
     <v-card-actions>
-      <v-btn @click="close(false)">Tancar</v-btn>
-      <v-btn @click="close(true)">Guardar</v-btn>
+      <v-btn @click="close(false)">Cancel·lar</v-btn>
+      <v-btn @click="close(ciclos)">Aceptar</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -52,14 +51,13 @@
 export default {
   name: "DialogEditCiclos",
   props: {
-    ciclosSelect: {
+    ciclos: {
       type: Array,
-      required: true,
     },
   },
   data: () => ({
-    ciclos: [],
-      errors: '',
+    ciclosSelect: [],
+    errors: "",
   }),
   computed: {
     ciclosCategorized() {
@@ -67,29 +65,32 @@ export default {
     },
   },
   mounted() {
-    this.ciclos = this.ciclosSelect
+    this.ciclosSelect = this.ciclos
+        ? this.ciclos.map((item) => item.id_ciclo)
+        : [];
   },
   watch: {
-    ciclosSelect() {
-      this.ciclos = this.ciclosSelect
-    }
+    ciclos() {
+    this.ciclosSelect = this.ciclos
+        ? this.ciclos.map((item) => item.id_ciclo)
+        : [];
+    },
   },
   methods: {
-      close(save) {
-        if (save) {
-          if (this.ciclos.length) {
-            this.errors = ''
-          this.$emit('close', this.ciclos)
-          } else {
-              this.errors = "Has de marcar al menys 1 cicle"
-          }
-
+    close(save) {
+      if (save) {
+        if (this.ciclos.length) {
+          this.errors = "";
+          this.$emit("close", this.ciclosSelect);
         } else {
-          this.errors = ''
-          this.$emit('close', false)
+          this.errors = "Has de marcar al menys 1 cicle";
         }
-      },
-          removeItemSelected(item) {
+      } else {
+        this.errors = "";
+        this.$emit("close", false);
+      }
+    },
+    removeItemSelected(item) {
       // No se pueden borrar ciclos ya validados
       const cicloActual = this.ciclos.find(
         (ciclo) => ciclo.id_ciclo === item.id
@@ -98,15 +99,15 @@ export default {
         alert("No pots eliminar un cicle ja validat");
         return;
       }
-      const index = this.ciclos.indexOf(item.id);
-      if (index >= 0) this.ciclos.splice(index, 1);
+      const index = this.ciclosSelect.indexOf(item.id);
+      if (index >= 0) this.ciclosSelect.splice(index, 1);
     },
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
-    .msgError {
-        color: red;
-    }
+.msgError {
+  color: red;
+}
 </style>

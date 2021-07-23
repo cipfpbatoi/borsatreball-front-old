@@ -1,14 +1,14 @@
 <template>
   <v-card>
     <v-card-title class="grey lighten-4 py-4 title">
-      {{ perfil ? "Editar" : "Nou" }} usuari
+      {{ modPerfil ? "Editar" : "Nou" }} usuari
       <v-spacer></v-spacer>
       <v-btn>Canvia contrasenya</v-btn>
     </v-card-title>
     <validation-observer ref="observer">
       <v-form @submit.prevent="submit" lazy-validation>
         <v-container>
-          <template v-if="perfil">
+          <template v-if="modPerfil">
             <v-text-field
               v-model="user.email"
               label="e-mail"
@@ -337,23 +337,27 @@
             </v-row>
             <v-row>
               <v-col cols="12">
-                <template  v-if="!showDialogCiclos">
-                  <v-label>Cicles finalitzats (en verd els ja validats pel responsable)</v-label>
-                  <br>
-        <ciclo-chip
-          v-for="ciclo in user.ciclos"
-          :key="ciclo.id_ciclo"
-          :data="ciclo"
-        ></ciclo-chip>
-        <v-btn @click="openDialogCiclos">Modificar cicles</v-btn>
+                <template v-if="!showDialogCiclos">
+                  <v-label
+                    >Cicles finalitzats (en verd els ja validats pel
+                    responsable)</v-label
+                  >
+                  <br />
+                  <ciclo-chip
+                    v-for="ciclo in user.ciclos"
+                    :key="ciclo.id_ciclo"
+                    :data="ciclo"
+                  ></ciclo-chip>
+                  <v-btn @click="openDialogCiclos">Modificar cicles</v-btn>
                 </template>
-                <validation-provider v-else
+                <validation-provider
+                  v-else
                   name="Cicles"
                   v-slot="{ errors }"
                   rules="required"
                 >
                   <v-select
-                    v-if="perfil"
+                    v-if="modPerfil"
                     :items="ciclosCategorized"
                     v-model="user.ciclosSelect"
                     item-text="ciclo"
@@ -405,31 +409,30 @@
                 </validation-provider>
               </v-col>
             </v-row>
-          <v-row>
-            <v-col cols="12">
-              <validation-provider
-                name="Condicions"
-                v-slot="{ errors }"
-                rules="required"
-                vid="accept"
-              >
-                <v-checkbox
-                  xs12
-                  v-model="user.accept"
-                  label="Acepte la Política de privacitat de la Borsa de Treball"
-                  :error-messages="errors"
-                ></v-checkbox>
-              </validation-provider>
-              <div xs6 class="font-weight-bold">
-                Al registrar-se enviant aquest formulari està acceptant la
-                <a href="/privacitat">Política de privacitat</a> i donant la
-                seua <br />conformitat al tractament de les seues dades
-                personals en els teminis i condicions allí indicades.
-              </div>
-            </v-col>
-          </v-row>
-                    </v-card>
-
+            <v-row>
+              <v-col cols="12">
+                <validation-provider
+                  name="Condicions"
+                  v-slot="{ errors }"
+                  rules="required"
+                  vid="accept"
+                >
+                  <v-checkbox
+                    xs12
+                    v-model="user.accept"
+                    label="Acepte la Política de privacitat de la Borsa de Treball"
+                    :error-messages="errors"
+                  ></v-checkbox>
+                </validation-provider>
+                <div xs6 class="font-weight-bold">
+                  Al registrar-se enviant aquest formulari està acceptant la
+                  <a href="/privacitat">Política de privacitat</a> i donant la
+                  seua <br />conformitat al tractament de les seues dades
+                  personals en els teminis i condicions allí indicades.
+                </div>
+              </v-col>
+            </v-row>
+          </v-card>
         </v-container>
 
         <v-card-actions>
@@ -439,12 +442,12 @@
         </v-card-actions>
       </v-form>
     </validation-observer>
-          <v-dialog v-model="showDialogCiclos" max-width="500px">
-            <dialog-edit-ciclos
-            :ciclosSelect="editedCiclos"
-          @close="closeDialogCiclos"
-        />
-      </v-dialog>
+    <v-dialog v-model="showDialogCiclos" max-width="500px">
+      <dialog-edit-ciclos
+        :ciclos="user.ciclos"
+        @close="closeDialogCiclos"
+      />
+    </v-dialog>
   </v-card>
 </template>
 
@@ -456,8 +459,8 @@ import es from "vee-validate/dist/locale/es.json";
 import { required, email, min, max, regex } from "vee-validate/dist/rules";
 import HelpButton from "../components/HelpButton";
 import CONSTANTS from "@/app.constants";
-import CicloChip from '../components/CicloChip.vue'
-import DialogEditCiclos from '../components/DialogEditCiclos.vue'
+import CicloChip from "../components/CicloChip.vue";
+import DialogEditCiclos from "../components/DialogEditCiclos.vue";
 
 localize("es", es);
 extend("required", required);
@@ -483,7 +486,7 @@ export default {
     DialogEditCiclos,
   },
   mounted() {
-    if (this.perfil) {
+    if (this.modPerfil) {
       this.user = this.$store.getters.getUser;
       switch (this.user.rol) {
         case this.ROL_EMPLEADOR:
@@ -503,7 +506,8 @@ export default {
       API.table
         .getItem(this.table, this.user.id)
         .then((data) => {
-          this.user = Object.assign({},
+          this.user = Object.assign(
+            {},
             this.$store.getters.getUser,
             data.data.data
           );
@@ -538,7 +542,7 @@ export default {
     ROL_TRABAJADOR() {
       return CONSTANTS.ROL_TRABAJADOR;
     },
-    perfil() {
+    modPerfil() {
       return this.$route.name === "Perfil";
     },
   },
@@ -580,8 +584,7 @@ export default {
           "Ha d'aceptar les condicions i la política de privacitat de la Borsa";
       }
       if (!this.user.ciclos.length) {
-        this.customErrors.ciclosSelect =
-          "Has de marcar al menys 1 cicle";
+        this.customErrors.ciclosSelect = "Has de marcar al menys 1 cicle";
       }
       const hasCustomErrors = Object.keys(this.customErrors).length;
       const valid = await this.$refs.observer.validate();
@@ -594,7 +597,7 @@ export default {
     },
 
     registerUser() {
-      if (this.perfil) {
+      if (this.modPerfil) {
         this.$store
           .dispatch("saveItemToTable", {
             table: this.table,
@@ -631,28 +634,49 @@ export default {
     },
 
     openDialogCiclos() {
-            this.editedCiclos = this.user.ciclos
-             ? this.user.ciclos.map( (item) => item.id_ciclo)
-             : []
-      this.showDialogCiclos = true
+      this.editedCiclos = this.user.ciclos
+        ? this.user.ciclos.map((item) => item.id_ciclo)
+        : [];
+      this.showDialogCiclos = true;
     },
     closeDialogCiclos(ciclos) {
-      this.showDialogCiclos = false
+      this.showDialogCiclos = false;
       if (ciclos) {
+        // Quitamos los eliminados
+        this.user.ciclos.forEach((ciclo, index) => {
+          if (!ciclo.validado && !ciclos.includes(ciclo.id_ciclo)) {
+            this.user.ciclos.splice(index, 1);
+          }
+        });
+        // Añadimos los nuevos
         ciclos.forEach((cicloId) => {
-        if (!this.user.ciclos.find((ciclo) => ciclo.id_ciclo === cicloId)) {
-          this.user.ciclos.push({
-            id_alumno: this.editedItem.id,
-            id_ciclo: cicloId,
-            any: null,
-            validado: false
-          })
-        }
-      })
-        alert(this.ciclosSelect)
-      }
+          if (!this.user.ciclos.find((ciclo) => ciclo.id_ciclo === cicloId)) {
+            this.user.ciclos.push({
+              id_alumno: this.user.id,
+              id_ciclo: cicloId,
+              any: null,
+              validado: false,
+            });
+          }
+        });
 
-    }
+        // Modificamos el perfil
+        this.$store.dispatch('saveItemToTable', this.user)
+        .then((data) => {
+          for (let prop in data) {
+            this.user[prop] = data.prop
+          }
+          this.$store.commit('loginUser', this.user)
+          this.$store.commit('setError', {
+            msg: 'El perfil se ha guardado correctamente',
+            type: 'success',
+          })
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+      }
+    },
   },
 };
 </script>
